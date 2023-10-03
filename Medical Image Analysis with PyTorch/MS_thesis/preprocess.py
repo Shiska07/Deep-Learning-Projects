@@ -1,11 +1,9 @@
 import numpy as np
 from PIL import Image
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import datasets, transforms, models
-from torchvision.io import read_image
 from torch.utils.data import DataLoader, Dataset, random_split
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
@@ -51,16 +49,17 @@ class CustomImageDataset(Dataset):
             image = self.transform(image)
         return image, label
     
-   
-def get_data_loaders(img_path, annotations_path, test_ratio=0.3, batch_size=64):
+
+# returns train and test data loader objects, resizing_factor is a size tuple 
+def get_data_loaders(img_path, annotations_path, resizing_factor, test_ratio=0.3, batch_size=64):
 
     # define transformer object
-    transform = transforms.Compose([transforms.Resize((224, 224)),
+    transform = transforms.Compose([transforms.Resize(resizing_factor),
                                     transforms.ToTensor(),
                                     transforms.Normalize(mean, std)])
     
     # create custom dataset object
-    dataset = CustomImageDataset(annotations_path, img_path transform=transform)
+    dataset = CustomImageDataset(annotations_path, img_path, transform=transform)
     
     # train test split
     train_ratio = 1-test_ratio
