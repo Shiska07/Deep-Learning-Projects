@@ -1,0 +1,18 @@
+{
+    "pretrained_model_name": "vgg16",
+    "pretrained_model_path": "",
+    "resizing_factor": 224,
+    "num_classes": 10,
+    "log_path": "",
+    "plots_path": "",
+    "n_fc": 2,
+    "epochs_fc": 8,
+    "n_compfc": 0,
+    "epochs_compfc": 8,
+    "n_conv": 2,
+    "epochs_conv": 10,
+    "n_finetune_fc": 2,
+    "n_finetune_conv": 0,
+    "epochs_finetune": 15,
+    "batch_size": 64
+}
