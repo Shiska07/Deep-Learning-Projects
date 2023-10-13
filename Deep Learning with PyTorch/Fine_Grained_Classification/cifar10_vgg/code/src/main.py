@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 import utils
 from model import CIFAR10Classifier
@@ -20,18 +21,24 @@ def main():
     # Load parameters from the JSON file
     parameters = utils.load_parameters(args.json_file)
     
+    print(parameters)
+    
     # initialize model
     custom_model = CIFAR10Classifier(parameters)
+    print(custom_model.model)
 
     # initialize transfer learning pipeline
-    tl_pipeline = TransferLearningPipiline(custom_model, parameters)
+    # tl_pipeline = TransferLearningPipiline(custom_model, parameters)
 
     # train custom fc layers
-    tl_pipeline.train_custom_fc_layers()
-
-    # test model
+    #tl_pipeline.train_custom_fc_layers()
 
 
 if __name__ == "__main__":
-    main()
+    with open('./outputs/outputs.txt', 'w+') as file:
+        sys.stdout = file
+        main()
+
+    sys.stdout = sys.__stdout__
+
     

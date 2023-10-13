@@ -20,7 +20,6 @@ class CIFAR10Classifier(pl.LightningModule):
         self.training_step_outputs = []
         self.validation_step_outputs = []
         self.test_step_outputs = []
-        self.logger = None
 
         self.classes = ('plane', 'car', 'bird', 'cat',
                         'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
@@ -61,9 +60,6 @@ class CIFAR10Classifier(pl.LightningModule):
 
         # add custom fc layers to model
         self.model.classifier[fc_idx] = custom_fc
-
-    def on_fit_start(self):
-        self.logger = self.trainer.logger
 
     def forward(self, x):
         x = self.model(x)
@@ -232,6 +228,3 @@ class CIFAR10Classifier(pl.LightningModule):
     def get_history(self):
         return self.history
 
-    @logger.setter
-    def logger(self, value):
-        self._logger = value

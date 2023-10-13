@@ -1,10 +1,10 @@
 {
     "pretrained_model_name": "vgg16",
-    "pretrained_model_path": "",
+    "pretrained_model_path": null,
     "resizing_factor": 224,
     "num_classes": 10,
-    "log_path": "",
-    "plots_path": "",
+    "log_path": null,
+    "plots_path": null,
     "n_fc": 2,
     "epochs_fc": 8,
     "n_compfc": 0,

@@ -58,8 +58,8 @@ class TransferLearningPipiline:
         history = self.model.get_history()
 
         # plot history
-        plots_path = utils.save_plots(history, self.plots_dir, self.pretrained_model_name, self.batch_size, 'fc')
-        printf(f'Custom fc training complete. Plots saved at {plots_path}. Logs saved at {log_dir}.\n')
+        plots_path = utils.save_plots(history, self.plots_path, self.pretrained_model_name, self.batch_size, 'fc')
+        print(f'Custom fc training complete. Plots saved at {plots_path}. Logs saved at {log_dir}.\n')
         
         
     def train_all_fc_layers(self):
@@ -93,10 +93,10 @@ class TransferLearningPipiline:
         history = self.model.get_history()
 
         # plot history
-        plots_path = utils.save_plots(history, self.plots_dir,
+        plots_path = utils.save_plots(history, self.plots_path,
                          self.pretrained_model_name, self.batch_size, 'compfc')
 
-        printf(f'Complete fc training complete. Plots saved at {plots_path}. Logs saved at {log_dir}.\n')
+        print(f'Complete fc training complete. Plots saved at {plots_path}. Logs saved at {log_dir}.\n')
 
 
     def train_conv_layers(self):
@@ -130,10 +130,10 @@ class TransferLearningPipiline:
         history = self.model.get_history()
 
         # save history
-        plots_path = utils.save_plots(history, self.plots_dir,
+        plots_path = utils.save_plots(history, self.plots_path,
                          self.pretrained_model_name, self.batch_size, 'conv')
 
-        printf(f'Convolutional layers training complete. Plots saved at {plots_path}. Logs saved at {log_dir}.\n')
+        print(f'Convolutional layers training complete. Plots saved at {plots_path}. Logs saved at {log_dir}.\n')
 
 
     def fine_tune_models(self):
@@ -167,10 +167,10 @@ class TransferLearningPipiline:
         history = self.model.get_history()
 
         # plot history
-        plots_path = utils.save_plots(history, self.plots_dir,
+        plots_path = utils.save_plots(history, self.plots_path,
                          self.pretrained_model_name, self.batch_size, 'finetune')
 
-        printf(f'Model fine-tuning complete. Plots saved at {plots_path}. Logs saved at {log_dir}.\n')
+        print(f'Model fine-tuning complete. Plots saved at {plots_path}. Logs saved at {log_dir}.\n')
 
 
     # complete transfer learning pipeline
