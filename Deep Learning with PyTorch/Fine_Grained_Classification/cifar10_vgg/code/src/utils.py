@@ -51,3 +51,4 @@ def save_plots(history, plots_dir, model_name, batch_size, training_type):
     plt.savefig(name)
 
     return plots_file_path
+
