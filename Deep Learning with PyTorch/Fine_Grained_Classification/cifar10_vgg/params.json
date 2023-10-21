@@ -1,10 +1,10 @@
 {
     "pretrained_model_name": "vgg16",
-    "pretrained_model_path": null,
+    "pretrained_model_path": "/cifar10_vgg/pretrained_models/vgg16.pth",
     "resizing_factor": 224,
     "num_classes": 10,
-    "log_path": null,
-    "plots_path": null,
+    "logs_path": "/cifar10_vgg/output_logs/logs",
+    "plots_path": "/cifar10_vgg/output_logs/plots",
     "n_fc": 2,
     "epochs_fc": 8,
     "n_compfc": 0,

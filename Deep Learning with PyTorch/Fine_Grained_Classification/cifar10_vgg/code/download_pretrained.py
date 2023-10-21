@@ -6,7 +6,7 @@ torch.backends.cudnn.benchmark = False
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-pretrained_models_path = '/export/home/raut/Desktop/thesis_files/cifar10_vgg/pretrained_models'
+pretrained_models_path = '/cifar10_vgg/pretrained_models'
 models_to_download = ['vgg16', 'vgg19', 'resnet34', 'resnet50', 'efficientnet_b6', 'efficientnet_b7', 'efficientnet_b6', 'efficientnet_v2_s', 'efficientnet_v2_m']
 
 

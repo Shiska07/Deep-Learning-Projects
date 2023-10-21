@@ -150,10 +150,6 @@ class CIFAR10Classifier(pl.LightningModule):
         avg_epoch_acc = cum_acc/num_items
         self.history['train_loss'].append(avg_epoch_loss)
         self.history['train_acc'].append(avg_epoch_acc)
-        self.logger.experiment.add_scalar(
-            'train_loss', avg_epoch_loss, self.current_epoch)
-        self.logger.experiment.add_scalar(
-            'train_acc', avg_epoch_loss, self.current_epoch)
         self.training_step_outputs.clear()
 
     def validation_step(self, batch, batch_idx):
@@ -177,10 +173,6 @@ class CIFAR10Classifier(pl.LightningModule):
         avg_epoch_acc = cum_acc/num_items
         self.history['val_loss'].append(avg_epoch_loss)
         self.history['val_acc'].append(avg_epoch_acc)
-        self.logger.experiment.add_scalar(
-            'val_loss', avg_epoch_loss, self.current_epoch)
-        self.logger.experiment.add_scalar(
-            'val_acc', avg_epoch_loss, self.current_epoch)
         self.validation_step_outputs.clear()
 
     def test_step(self):
@@ -203,7 +195,7 @@ class CIFAR10Classifier(pl.LightningModule):
         ])
         cifar10_train = datasets.CIFAR10(
             root='./data', train=True, transform=transform, download=True)
-        return DataLoader(cifar10_train, batch_size=self.batch_size, shuffle=True, num_workers=4)
+        return DataLoader(cifar10_train, batch_size=self.batch_size, shuffle=True,num_workers=4)
 
     def val_dataloader(self):
         transform = transforms.Compose([
@@ -213,7 +205,7 @@ class CIFAR10Classifier(pl.LightningModule):
         ])
         cifar10_val = datasets.CIFAR10(
             root='./data', train=False, transform=transform, download=True)
-        return DataLoader(cifar10_val, batch_size=self.batch_size)
+        return DataLoader(cifar10_val, batch_size=self.batch_size, num_workers=7)
 
     def test_dataloader(self):
         transform = transforms.Compose([
@@ -223,7 +215,7 @@ class CIFAR10Classifier(pl.LightningModule):
         ])
         cifar10_test = datasets.CIFAR10(
             root='./data', train=False, transform=transform, download=True)
-        return DataLoader(cifar10_test, batch_size=self.batch_size)
+        return DataLoader(cifar10_test, batch_size=self.batch_size, num_workers=4)
 
     def get_history(self):
         return self.history
