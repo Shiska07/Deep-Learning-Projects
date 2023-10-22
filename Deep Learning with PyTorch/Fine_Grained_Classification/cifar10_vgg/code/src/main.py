@@ -29,7 +29,7 @@ def main():
 
     # train model
     tl_pipeline.train()
-    
+
 
 if __name__ == "__main__":
     main()

@@ -31,9 +31,10 @@ class TransferLearningPipiline:
         
         # freeze all layers except the last two fc layers
         self.model.set_transfer_learning_params(self.n_fc, -1)
+        self.model.configure_optimizers('lr_fc')
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_fc, enable_checkpointing=False, logger=False)
+        trainer = pl.Trainer(max_epochs=self.epochs_fc, limit_train_batches=100, enable_checkpointing=False, logger=False)
         trainer.fit(self.model)
 
         # get training history
@@ -48,9 +49,11 @@ class TransferLearningPipiline:
 
         # freeze all layers except the last two fc layers
         self.model.set_transfer_learning_params(self.n_compfc, -1)
+        self.model.configure_optimizers('lr_compfc')
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_compfc, enable_checkpointing=False, logger=False)
+        trainer = pl.Trainer(max_epochs=self.epochs_compfc,
+                             limit_train_batches=100, enable_checkpointing=False, logger=False)
         trainer.fit(self.model)
 
         # get training history
@@ -67,9 +70,11 @@ class TransferLearningPipiline:
 
         # freeze all layers except the last two fc layers
         self.model.set_transfer_learning_params(-1, self.n_conv)
+        self.model.configure_optimizers('lr_conv')
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_conv, enable_checkpointing=False, logger=False)
+        trainer = pl.Trainer(max_epochs=self.epochs_conv,
+                             limit_train_batches=100, enable_checkpointing=False, logger=False)
         trainer.fit(self.model)
 
         # get training history
@@ -86,9 +91,11 @@ class TransferLearningPipiline:
 
         # freeze all layers except the last two fc layers
         self.model.set_transfer_learning_params(self.n_finetune_fc, self.n_finetune_conv)
+        self.model.configure_optimizers('lr_finetune')
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_finetune, enable_checkpointing=False, logger=False)
+        trainer = pl.Trainer(max_epochs=self.epochs_finetune,
+                             limit_train_batches=100, enable_checkpointing=False, logger=False)
         trainer.fit(self.model)
 
         # get training history

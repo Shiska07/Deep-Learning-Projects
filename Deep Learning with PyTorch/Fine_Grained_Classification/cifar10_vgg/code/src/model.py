@@ -15,12 +15,21 @@ class CIFAR10Classifier(pl.LightningModule):
         self.batch_size = parameters['batch_size']
         self.resizing_factor = parameters['resizing_factor']
         self.loss_fn = nn.NLLLoss()
-        self.history = {'train_loss': [], 'train_acc': [],
-                        'val_loss': [], 'val_acc': []}
+        
+        # store learning rates for different layers
+        self.lr = {}
+        self.lr['lr_fc'] = parameters['lr_fc']
+        self.lr['lr_compfc'] = parameters['lr_compfc']
+        self.lr['lr_conv'] = parameters['lr_conv']
+        self.lr['lr_finetune'] = parameters['lr_finetune']
+        
+        # klists to store outputs from each train/val step
         self.training_step_outputs = []
         self.validation_step_outputs = []
         self.test_step_outputs = []
 
+        self.history = {'train_loss': [], 'train_acc': [],
+                    'val_loss': [], 'val_acc': []}
         self.classes = ('plane', 'car', 'bird', 'cat',
                         'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
@@ -64,6 +73,15 @@ class CIFAR10Classifier(pl.LightningModule):
     def forward(self, x):
         x = self.model(x)
         return x
+    
+    def configure_optimizers(self, mode = None):
+        if mode == None:
+            optimizer = Adam(filter(lambda p: p.requires_grad,
+                            self.model.parameters()), lr=0.001)
+        else:
+            optimizer = Adam(filter(lambda p: p.requires_grad,
+                                self.model.parameters()), lr=self.lr[mode])
+        return optimizer
 
     # freezes all layers in the model
     def freeze_all_layers(self):
@@ -184,10 +202,6 @@ class CIFAR10Classifier(pl.LightningModule):
     def on_test_epoch_end(self):
         pass
 
-    def configure_optimizers(self):
-        optimizer = Adam(filter(lambda p: p.requires_grad,
-                         self.model.parameters()), lr=0.001)
-        return optimizer
 
     def train_dataloader(self):
         transform = transforms.Compose([

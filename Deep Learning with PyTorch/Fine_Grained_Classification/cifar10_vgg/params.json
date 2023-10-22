@@ -6,13 +6,17 @@
     "logs_path": "/cifar10_vgg/output_logs/logs",
     "plots_path": "/cifar10_vgg/output_logs/plots",
     "n_fc": 2,
+    "lr_fc": 0.01,
     "epochs_fc": 8,
     "n_compfc": 0,
+    "lr_compfc": 0.005,
     "epochs_compfc": 8,
     "n_conv": 2,
+    "lr_conv": 0.003,
     "epochs_conv": 10,
     "n_finetune_fc": 2,
     "n_finetune_conv": 0,
+    "lr_finetune": 0.001,
     "epochs_finetune": 15,
     "batch_size": 64
 }
