@@ -33,7 +33,7 @@ class TransferLearningPipiline:
         self.model.set_transfer_learning_params(self.n_fc, -1)
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_fc)
+        trainer = pl.Trainer(max_epochs=self.epochs_fc, enable_checkpointing=False, logger=False)
         trainer.fit(self.model)
 
         # get training history
@@ -50,7 +50,7 @@ class TransferLearningPipiline:
         self.model.set_transfer_learning_params(self.n_compfc, -1)
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_compfc)
+        trainer = pl.Trainer(max_epochs=self.epochs_compfc, enable_checkpointing=False, logger=False)
         trainer.fit(self.model)
 
         # get training history
@@ -69,7 +69,7 @@ class TransferLearningPipiline:
         self.model.set_transfer_learning_params(-1, self.n_conv)
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_conv)
+        trainer = pl.Trainer(max_epochs=self.epochs_conv, enable_checkpointing=False, logger=False)
         trainer.fit(self.model)
 
         # get training history
@@ -88,7 +88,7 @@ class TransferLearningPipiline:
         self.model.set_transfer_learning_params(self.n_finetune_fc, self.n_finetune_conv)
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_finetune)
+        trainer = pl.Trainer(max_epochs=self.epochs_finetune, enable_checkpointing=False, logger=False)
         trainer.fit(self.model)
 
         # get training history

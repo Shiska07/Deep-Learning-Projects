@@ -136,6 +136,7 @@ class CIFAR10Classifier(pl.LightningModule):
         y_pred = torch.argmax(torch.exp(logits), 1)
         acc = (y_pred == y).sum().item()/self.batch_size
         self.training_step_outputs.append((loss.item(), acc))
+        print(f'Training step: loss: {loss.item()}, acc:{acc}')
         return loss
 
     def on_train_epoch_end(self):
@@ -150,6 +151,8 @@ class CIFAR10Classifier(pl.LightningModule):
         avg_epoch_acc = cum_acc/num_items
         self.history['train_loss'].append(avg_epoch_loss)
         self.history['train_acc'].append(avg_epoch_acc)
+        for params in self.model.parameters():
+            print(params.requires_grad)
         self.training_step_outputs.clear()
 
     def validation_step(self, batch, batch_idx):
@@ -195,7 +198,7 @@ class CIFAR10Classifier(pl.LightningModule):
         ])
         cifar10_train = datasets.CIFAR10(
             root='./data', train=True, transform=transform, download=True)
-        return DataLoader(cifar10_train, batch_size=self.batch_size, shuffle=True,num_workers=4)
+        return DataLoader(cifar10_train, batch_size=self.batch_size, shuffle=True, num_workers=7)
 
     def val_dataloader(self):
         transform = transforms.Compose([
@@ -215,7 +218,7 @@ class CIFAR10Classifier(pl.LightningModule):
         ])
         cifar10_test = datasets.CIFAR10(
             root='./data', train=False, transform=transform, download=True)
-        return DataLoader(cifar10_test, batch_size=self.batch_size, num_workers=4)
+        return DataLoader(cifar10_test, batch_size=self.batch_size, num_workers=7)
 
     def get_history(self):
         return self.history

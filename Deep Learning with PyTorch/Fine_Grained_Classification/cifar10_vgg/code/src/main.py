@@ -27,15 +27,12 @@ def main():
     # initialize transfer learning pipeline
     tl_pipeline = TransferLearningPipiline(custom_model, parameters)
 
-    # train custom fc layers
-    tl_pipeline.train_custom_fc_layers()
-
+    # train model
+    tl_pipeline.train()
+    
 
 if __name__ == "__main__":
-    with open('/cifar10_vgg/output_logs/console_out.txt', 'w+') as file:
-        sys.stdout = file
-        main()
+    main()
 
-    sys.stdout = sys.__stdout__
 
     

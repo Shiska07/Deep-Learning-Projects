@@ -1,4 +1,5 @@
 Data/
+output_logs/
 logs/
 lightning_logs/
 pretrained_models/
