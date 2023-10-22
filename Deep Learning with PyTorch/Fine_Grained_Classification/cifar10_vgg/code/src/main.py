@@ -33,11 +33,15 @@ def main():
 
 
 if __name__ == "__main__":
-    with open('output_logs/console_outputs.txt', 'w+') as file:
+    main()
+    '''
+        with open('output_logs/console_outputs.txt', 'w+') as file:
         sys.stdout = file
         main()
 
     sys.stdout = sys.__stdout__
+    '''
+
 
 
     

@@ -35,8 +35,7 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_fc')
 
         # train model
-        self.trainer = pl.Trainer(max_epochs=self.epochs_fc, limit_val_batches=50,
-                                  limit_test_batches=50, enable_checkpointing=False, checkpoint_callback=False, logger=False)
+        self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs_fc, limit_val_batches=50, limit_test_batches=50, enable_checkpointing=False, logger=False)
         self.trainer.fit(self.model)
 
         # get training history
@@ -54,9 +53,7 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_compfc')
 
         # train model
-        self.trainer = pl.Trainer(max_epochs=self.epochs_compfc,
-                                  limit_val_batches=50, limit_test_batches=50,
-                                  enable_checkpointing=False, checkpoint_callback=False, logger=False)
+        self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs_compfc, limit_val_batches=50, limit_test_batches=50, enable_checkpointing=False, logger=False)
         self.trainer.fit(self.model)
 
         # get training history
@@ -76,9 +73,7 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_conv')
 
         # train model
-        self.trainer = pl.Trainer(max_epochs=self.epochs_conv,
-                                  limit_val_batches=50, limit_test_batches=50,
-                                  enable_checkpointing=False, checkpoint_callback=False, logger=False)
+        self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs_conv, limit_val_batches=50, limit_test_batches=50, enable_checkpointing=False, logger=False)
         self.trainer.fit(self.model)
 
         # get training history
@@ -98,9 +93,7 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_finetune')
 
         # train model
-        self.trainer = pl.Trainer(max_epochs=self.epochs_finetune,
-                                  limit_val_batches=50, limit_test_batches=50,
-                                  enable_checkpointing=False, checkpoint_callback=False, logger=False)
+        self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs_finetune, limit_val_batches=50, limit_test_batches=50, enable_checkpointing=False, logger=False)
         self.trainer.fit(self.model)
 
         # get training history
