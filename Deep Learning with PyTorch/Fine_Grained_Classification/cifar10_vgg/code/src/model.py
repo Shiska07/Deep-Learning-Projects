@@ -154,7 +154,10 @@ class CIFAR10Classifier(pl.LightningModule):
         y_pred = torch.argmax(torch.exp(logits), 1)
         acc = (y_pred == y).sum().item()/self.batch_size
         self.training_step_outputs.append((loss.item(), acc))
-        print(f'Training step: loss: {loss.item()}, acc:{acc}')
+
+        # print metrics every 100th batch
+        if batch_idx % 100 == 0:
+            print(f'\nTraining step: loss: {loss.item()}, acc:{acc}')
         return loss
 
     def on_train_epoch_end(self):
@@ -180,6 +183,7 @@ class CIFAR10Classifier(pl.LightningModule):
         y_pred = torch.argmax(torch.exp(logits), 1)
         acc = (y_pred == y).sum().item()/self.batch_size
         self.validation_step_outputs.append((loss.item(), acc))
+        print(f'\nVal step: loss: {loss.item()}, acc:{acc}')
         return loss
 
     def on_validation_epoch_end(self):
@@ -196,11 +200,28 @@ class CIFAR10Classifier(pl.LightningModule):
         self.history['val_acc'].append(avg_epoch_acc)
         self.validation_step_outputs.clear()
 
-    def test_step(self):
-        pass
+    def test_step(self, batch, batch_idx):
+        x, y = batch
+        logits = self.model(x)
+        loss = self.loss_fn(logits, y)
+        y_pred = torch.argmax(torch.exp(logits), 1)
+        acc = (y_pred == y).sum().item() / self.batch_size
+        self.test_step_outputs.append((loss.item(), acc))
+        print(f'\nTest step: loss: {loss.item()}, acc:{acc}')
+        return loss
 
     def on_test_epoch_end(self):
-        pass
+        num_items = len(self.test_step_outputs)
+        cum_loss = 0
+        cum_acc = 0
+        for loss, acc in self.test_step_outputs:
+            cum_loss += loss
+            cum_acc += acc
+
+        avg_epoch_loss = cum_loss / num_items
+        avg_epoch_acc = cum_acc / num_items
+        print(f'Test Epoch loss: {avg_epoch_loss} Test epoch Acc: {avg_epoch_acc}')
+        self.test_step_outputs.clear()
 
 
     def train_dataloader(self):

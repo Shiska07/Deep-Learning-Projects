@@ -25,6 +25,7 @@ class TransferLearningPipiline:
         self.n_finetune_conv = parameters['n_finetune_conv']
         self.epochs_finetune = parameters['epochs_finetune']
         self.batch_size = parameters['batch_size']
+        self.trainer = None
         
 
     def train_custom_fc_layers(self):
@@ -34,8 +35,9 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_fc')
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_fc, limit_train_batches=100, enable_checkpointing=False, logger=False)
-        trainer.fit(self.model)
+        self.trainer = pl.Trainer(max_epochs=self.epochs_fc, limit_val_batches=50,
+                                  limit_test_batches=50, enable_checkpointing=False, checkpoint_callback=False, logger=False)
+        self.trainer.fit(self.model)
 
         # get training history
         history = self.model.get_history()
@@ -52,9 +54,10 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_compfc')
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_compfc,
-                             limit_train_batches=100, enable_checkpointing=False, logger=False)
-        trainer.fit(self.model)
+        self.trainer = pl.Trainer(max_epochs=self.epochs_compfc,
+                                  limit_val_batches=50, limit_test_batches=50,
+                                  enable_checkpointing=False, checkpoint_callback=False, logger=False)
+        self.trainer.fit(self.model)
 
         # get training history
         history = self.model.get_history()
@@ -73,9 +76,10 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_conv')
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_conv,
-                             limit_train_batches=100, enable_checkpointing=False, logger=False)
-        trainer.fit(self.model)
+        self.trainer = pl.Trainer(max_epochs=self.epochs_conv,
+                                  limit_val_batches=50, limit_test_batches=50,
+                                  enable_checkpointing=False, checkpoint_callback=False, logger=False)
+        self.trainer.fit(self.model)
 
         # get training history
         history = self.model.get_history()
@@ -94,9 +98,10 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_finetune')
 
         # train model
-        trainer = pl.Trainer(max_epochs=self.epochs_finetune,
-                             limit_train_batches=100, enable_checkpointing=False, logger=False)
-        trainer.fit(self.model)
+        self.trainer = pl.Trainer(max_epochs=self.epochs_finetune,
+                                  limit_val_batches=50, limit_test_batches=50,
+                                  enable_checkpointing=False, checkpoint_callback=False, logger=False)
+        self.trainer.fit(self.model)
 
         # get training history
         history = self.model.get_history()
@@ -117,7 +122,8 @@ class TransferLearningPipiline:
     
     # run test    
     def test(self):
-        self.model.test()
+        # call test off the most current trainer
+        self.trainer.test()
                 
     def get_model(self):
         return self.model

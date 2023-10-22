@@ -29,10 +29,15 @@ def main():
 
     # train model
     tl_pipeline.train()
+    #tl_pipeline.test()
 
 
 if __name__ == "__main__":
-    main()
+    with open('output_logs/console_outputs.txt', 'w+') as file:
+        sys.stdout = file
+        main()
+
+    sys.stdout = sys.__stdout__
 
 
     
