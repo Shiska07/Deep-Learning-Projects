@@ -10,23 +10,28 @@ class TransferLearningPipiline:
         
         # funny connected layers to unfreeze from last
         self.n_fc = parameters['n_fc']                                   
-        self.epochs_fc = parameters['epochs_fc']
         
         # number of total fully connected layers to unfreeze
         self.n_compfc = parameters['n_compfc']
-        self.epochs_compfc = parameters['epochs_compfc']
         
         # no. of convolutional layers to unfreeze from last
         self.n_conv = parameters['n_conv']
-        self.epochs_conv = parameters['epochs_conv']
         
         # no. of fully connected and convolutional layers to unfreeze for fine-tuning
         self.n_finetune_fc = parameters['n_finetune_fc']
         self.n_finetune_conv = parameters['n_finetune_conv']
-        self.epochs_finetune = parameters['epochs_finetune']
         self.batch_size = parameters['batch_size']
-        self.trainer = None
         
+        self.epochs = {}
+        self.epochs['fc'] = parameters['epochs_fc']
+        self.epochs['compfc'] = parameters['epochs_compfc']
+        self.epochs['conv'] = parameters['epochs_conv']
+        self.epochs['finetune'] = parameters['epochs_finetune']
+
+    
+    def initalize_trainer(self, mode):
+        self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs[mode],
+                                  limit_val_batches=50, enable_progress_bar=False, limit_test_batches=50, enable_checkpointing=False, logger=False)
 
     def train_custom_fc_layers(self):
         
@@ -35,7 +40,7 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_fc')
 
         # train model
-        self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs_fc, limit_val_batches=50, limit_test_batches=50, enable_checkpointing=False, logger=False)
+        self.initalize_trainer('fc')
         self.trainer.fit(self.model)
 
         # get training history
@@ -53,7 +58,7 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_compfc')
 
         # train model
-        self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs_compfc, limit_val_batches=50, limit_test_batches=50, enable_checkpointing=False, logger=False)
+        self.initalize_trainer('compfc')
         self.trainer.fit(self.model)
 
         # get training history
@@ -73,7 +78,7 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_conv')
 
         # train model
-        self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs_conv, limit_val_batches=50, limit_test_batches=50, enable_checkpointing=False, logger=False)
+        self.initalize_trainer('conv')
         self.trainer.fit(self.model)
 
         # get training history
@@ -93,7 +98,7 @@ class TransferLearningPipiline:
         self.model.configure_optimizers('lr_finetune')
 
         # train model
-        self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs_finetune, limit_val_batches=50, limit_test_batches=50, enable_checkpointing=False, logger=False)
+        self.initalize_trainer('finetune')
         self.trainer.fit(self.model)
 
         # get training history

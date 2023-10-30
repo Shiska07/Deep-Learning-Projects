@@ -23,7 +23,7 @@ class CIFAR10Classifier(pl.LightningModule):
         self.lr['lr_conv'] = parameters['lr_conv']
         self.lr['lr_finetune'] = parameters['lr_finetune']
         
-        # klists to store outputs from each train/val step
+        # lists to store outputs from each train/val step
         self.training_step_outputs = []
         self.validation_step_outputs = []
         self.test_step_outputs = []
@@ -157,7 +157,7 @@ class CIFAR10Classifier(pl.LightningModule):
 
         # print metrics every 100th batch
         if batch_idx % 100 == 0:
-            print(f'\nTraining step: loss: {loss.item()}, acc:{acc}')
+            print(f'\nTraining step[Epoch({self.current_epoch})|batch({batch_idx})]: loss: {loss.item()}, acc:{acc}')
         return loss
 
     def on_train_epoch_end(self):
@@ -183,7 +183,7 @@ class CIFAR10Classifier(pl.LightningModule):
         y_pred = torch.argmax(torch.exp(logits), 1)
         acc = (y_pred == y).sum().item()/self.batch_size
         self.validation_step_outputs.append((loss.item(), acc))
-        print(f'\nVal step: loss: {loss.item()}, acc:{acc}')
+        print(f'\nVal step[batch({batch_idx})]: loss: {loss.item()}, acc:{acc}')
         return loss
 
     def on_validation_epoch_end(self):
@@ -252,7 +252,7 @@ class CIFAR10Classifier(pl.LightningModule):
             transforms.Normalize(self.mean, self.std)
         ])
         cifar10_test = datasets.CIFAR10(
-            root='./data', train=False, transform=transform, download=True)
+            root='./data', train=False, transform=transforms, download=True)
         return DataLoader(cifar10_test, batch_size=self.batch_size, num_workers=7)
 
     def get_history(self):
