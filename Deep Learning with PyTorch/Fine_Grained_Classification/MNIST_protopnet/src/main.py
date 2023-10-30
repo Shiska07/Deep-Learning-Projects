@@ -12,7 +12,7 @@ def main():
     parameters['lr'] = 0.001
     parameters['input_shape'] = (28, 28)
     parameters['pretrained_model_path'] = None
-
+    parameters['val_ratio'] = 0.3
     # initalize model
     custom_model = MNISTClassifier(parameters)
 

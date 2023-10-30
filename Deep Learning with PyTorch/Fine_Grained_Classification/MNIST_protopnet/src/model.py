@@ -4,7 +4,7 @@ import torchvision
 from torch.optim import Adam
 import pytorch_lightning as pl
 from torchvision import datasets, transforms, models
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 
 class MNISTClassifier(pl.LightningModule):
     def __int__(self, parameters):
@@ -12,11 +12,10 @@ class MNISTClassifier(pl.LightningModule):
         self.num_classes = parameters['num_classes']
         self.batch_size = parameters['batch_size']
         self.input_shape = parameters['input_shape']
+        self.val_ratio = parameters['val_ratio']
         self.lr = parameters['lr']
         self.pretrained_model_path = parameters['pretrained_model_path']
 
-        # define model architecture
-        self.loss_fn = nn.NLLLoss()
 
         # lists to store outputs from each train/val step
         self.training_step_outputs = []
@@ -24,6 +23,10 @@ class MNISTClassifier(pl.LightningModule):
         self.test_step_outputs = []
         self.history = {'train_loss': [], 'train_acc': [],
                         'val_loss': [], 'val_acc': []}
+
+
+        # define model architecture
+        self.loss_fn = nn.NLLLoss()
 
     def forward(self, x):
         pass
@@ -107,16 +110,19 @@ class MNISTClassifier(pl.LightningModule):
         avg_epoch_acc = cum_acc / num_items
         print(f'Test Epoch loss: {avg_epoch_loss} Test epoch Acc: {avg_epoch_acc}')
         self.test_step_outputs.clear()
-
-    def train_dataloader(self):
+        
+    def setup(self, stage=None):
         mnist_train = datasets.CIFAR10(
             root='./data', train=True, transform=transforms.ToTensor(), download=True)
-        return DataLoader(mnist_train, batch_size=self.batch_size, shuffle=True, num_workers=1)
+        train_size = int((1 - self.val_size) * len(mnist_train))
+        val_size = int(self.val_ratio * len(mnist_train))
+        self.mnist_train, self.mnist_val = random_split(mnist_train, [train_size, val_size])
+
+    def train_dataloader(self):
+        return DataLoader(self.mnist_train, batch_size=self.batch_size, shuffle=True, num_workers=1)
 
     def val_dataloader(self):
-        mnist_val = datasets.CIFAR10(
-            root='./data', train=False, transform=transforms.ToTensor, download=True)
-        return DataLoader(mnist_val, batch_size=self.batch_size, num_workers=7)
+        return DataLoader(self.mnist_val, batch_size=self.batch_size, num_workers=1)
 
     def test_dataloader(self):
         mnist_test = datasets.CIFAR10(
