@@ -2,3 +2,4 @@ Data/
 logs/
 lightning_logs/
 pretrained_models/
+output_logs/
