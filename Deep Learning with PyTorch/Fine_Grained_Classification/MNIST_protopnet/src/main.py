@@ -1,7 +1,7 @@
 import os
 import sys
 from model import MNISTClassifier
-from train_model import TransferLearningPipiline
+import pytorch_lightning as pl
 
 def main():
 
@@ -15,6 +15,13 @@ def main():
     parameters['val_ratio'] = 0.3
     # initalize model
     custom_model = MNISTClassifier(parameters)
+
+    # intitalize model
+    epochs = 20
+    trainer = pl.Trainer(max_epochs=epochs,enable_checkpointing=False, logger=False)
+
+    # fit model
+    trainer.fit(custom_model)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':

@@ -143,3 +143,6 @@ class MNISTClassifier(pl.LightningModule):
         mnist_test = datasets.CIFAR10(
             root='./data', train=False, transform=transforms.ToTensor, download=True)
         return DataLoader(mnist_test, batch_size=self.batch_size, num_workers=1)
+
+    def history(self):
+        return self.history
