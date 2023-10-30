@@ -27,9 +27,24 @@ class MNISTClassifier(pl.LightningModule):
 
         # define model architecture
         self.loss_fn = nn.NLLLoss()
+        self.conv_1 = nn.Sequential(nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2),
+                                    nn.ReLU(),
+                                    nn.MaxUnpool2d(kernel_size=2))
+        self.conv_2 = nn.Sequential(nn.Conv2d(16, 32, kernel_size=5, stride=1, padding=2),
+                                    nn.ReLU(),
+                                    nn.MaxUnpool2d(kernel_size=2))
+        self.flatten_1 = nn.Flatten()
+        self.fc1 = nn.Linear(32*7*7, 128)
+        self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
-        pass
+        x = self.conv_1(x)
+        x = self.conv_2(x)
+        x = self.flatten_1(x)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        x = nn.LogSoftmax(x)
+        return x
 
     def configure_optimizers(self):
         optimizer = Adam(self.model.parameters(), lr = self.lr)
@@ -110,7 +125,7 @@ class MNISTClassifier(pl.LightningModule):
         avg_epoch_acc = cum_acc / num_items
         print(f'Test Epoch loss: {avg_epoch_loss} Test epoch Acc: {avg_epoch_acc}')
         self.test_step_outputs.clear()
-        
+
     def setup(self, stage=None):
         mnist_train = datasets.CIFAR10(
             root='./data', train=True, transform=transforms.ToTensor(), download=True)

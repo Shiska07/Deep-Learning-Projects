@@ -224,7 +224,7 @@ class CIFAR10Classifier(pl.LightningModule):
         cifar10_test = datasets.CIFAR10(
             root='./data', train=False, transform=transform, download=True)
         return DataLoader(cifar10_test, batch_size=self.batch_size)
-
+-
     def get_history(self):
         return self.history
 
