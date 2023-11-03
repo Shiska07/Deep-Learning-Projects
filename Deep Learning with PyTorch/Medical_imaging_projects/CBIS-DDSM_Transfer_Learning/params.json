@@ -1,0 +1,23 @@
+{
+    "pretrained_model_name": "vgg16",
+    "pretrained_model_path": "pretrained_models/vgg16.pth",
+    "resizing_factor": 224,
+    "num_classes": 4,
+    "data_folder": "data/CBIS-DDSM/processed/cropped_images",
+    "logs_path": "output_logs/logs",
+    "plots_path": "output_logs/plots",
+    "n_fc": 2,
+    "lr_fc": 0.01,
+    "epochs_fc": 20,
+    "n_compfc": 0,
+    "lr_compfc": 0.01,
+    "epochs_compfc": 20,
+    "n_conv": 2,
+    "lr_conv": 0.003,
+    "epochs_conv": 20,
+    "n_finetune_fc": 2,
+    "n_finetune_conv": 0,
+    "lr_finetune": 0.001,
+    "epochs_finetune": 25,
+    "batch_size": 64
+}
