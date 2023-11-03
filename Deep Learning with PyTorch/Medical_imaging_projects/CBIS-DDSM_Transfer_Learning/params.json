@@ -4,6 +4,7 @@
     "resizing_factor": 224,
     "num_classes": 4,
     "data_folder": "data/CBIS-DDSM/processed/cropped_images",
+    "base_model":1,
     "logs_path": "output_logs/logs",
     "plots_path": "output_logs/plots",
     "n_fc": 2,

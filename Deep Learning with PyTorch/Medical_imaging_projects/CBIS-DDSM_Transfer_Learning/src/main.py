@@ -23,24 +23,20 @@ def main():
     
     # initialize model
     custom_model = CBISDDSMClassifier(parameters)
+    print(custom_model.model())
 
     # initialize transfer learning pipeline
-    tl_pipeline = TransferLearningPipiline(custom_model, parameters)
+    #tl_pipeline = TransferLearningPipiline(custom_model, parameters)
 
     # train model
-    tl_pipeline.train_custom_fc_layers()
+    #tl_pipeline.train_custom_fc_layers()
     #tl_pipeline.train()
     #tl_pipeline.test()
 
 
 if __name__ == "__main__":
     
-    with open('output_logs/console_outputs.txt', 'w+') as file:
-        sys.stdout = file
-        main()
-        print('Console Outputs saved at "output_logs/console_outputs.txt"\n')
-
-    sys.stdout = sys.__stdout__
+    main()
     
 
 

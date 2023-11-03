@@ -11,10 +11,10 @@ class CBISDDSMClassifier(pl.LightningModule):
         super(CBISDDSMClassifier, self).__init__()
         self.pretrained_model_name = parameters['pretrained_model_name']
         self.pretrained_model_path = parameters['pretrained_model_path']
-        self.num_classes = parameters['num_classes']
         self.batch_size = parameters['batch_size']
         self.resizing_factor = parameters['resizing_factor']
         self.data_folder = parameters['data_folder']
+        self.num_classes = parameters['num_classes']
         self.loss_fn = nn.NLLLoss()
     
         
@@ -42,33 +42,45 @@ class CBISDDSMClassifier(pl.LightningModule):
         # check for GPU availability
         use_gpu = torch.cuda.is_available()
 
-        # load model architectures without weight
-        if use_gpu:
-            self.model = getattr(models, self.pretrained_model_name)().cuda()
+        # if model being loaded is a base model
+        if parameters['base_model']:
+            # load model architectures without weight
+            if use_gpu:
+                self.model = getattr(models, self.pretrained_model_name)().cuda()
+            else:
+                self.model = getattr(models, self.pretrained_model_name)()
+            
+
+            # load pre-trained weights
+            if use_gpu:
+                self.model.load_state_dict(torch.load(self.pretrained_model_path))
+            else:
+                self.model.load_state_dict(torch.load(
+                    self.pretrained_model_path, map_location=torch.device('cpu')))
+        
+        
+            # get input dimension of the fc layer to be replaced and index of the last fc layer
+            self.in_feat = self.model.classifier[-1].in_features
+            fc_idx = len(self.model.classifier) - 1
+
+            custom_fc = nn.Sequential(nn.Linear(self.in_feat, 512),
+                                    nn.ReLU(),
+                                    nn.Dropout(0.5),
+                                    nn.Linear(512, self.num_classes),
+                                    nn.ReLU(),
+                                    nn.Dropout(0.5),
+                                    nn.LogSoftmax(dim=1))
+
+            # add custom fc layers to model
+            self.model.classifier[fc_idx] = custom_fc
+        
+        # if model is not a base model    
         else:
-            self.model = getattr(models, self.pretrained_model_name)()
-
-        # load pre-trained weights
-        if use_gpu:
-            self.model.load_state_dict(torch.load(self.pretrained_model_path))
-        else:
-            self.model.load_state_dict(torch.load(
-                self.pretrained_model_path, map_location=torch.device('cpu')))
-
-        # get input dimension of the fc layer to be replaced and index of the last fc layer
-        self.in_feat = self.model.classifier[-1].in_features
-        fc_idx = len(self.model.classifier) - 1
-
-        custom_fc = nn.Sequential(nn.Linear(self.in_feat, 512),
-                                  nn.ReLU(),
-                                  nn.Dropout(0.5),
-                                  nn.Linear(512, self.num_classes),
-                                  nn.ReLU(),
-                                  nn.Dropout(0.5),
-                                  nn.LogSoftmax(dim=1))
-
-        # add custom fc layers to model
-        self.model.classifier[fc_idx] = custom_fc
+            if use_gpu:
+                self.model = torch.load(self.pretrained_model_path)
+            else:
+                self.model = torch.load(
+                    self.pretrained_model_path, map_location=torch.device('cpu'))            
 
     def forward(self, x):
         x = self.model(x)
@@ -223,33 +235,41 @@ class CBISDDSMClassifier(pl.LightningModule):
         print(f'Test Epoch loss: {avg_epoch_loss} Test epoch Acc: {avg_epoch_acc}')
         self.test_step_outputs.clear()
 
-    def setup(self, stage=None):
+    def train_dataloader(self):
         transform = transforms.Compose([
             transforms.Resize(self.resizing_factor),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             transforms.Normalize(self.mean, self.std)
         ])
-        
+
         # load train and validation datasets
-        ddsm_train = datasets.ImageFolder(root = self.data_folder+'/train'
-             transform=transform)
+        ddsm_train = datasets.ImageFolder(root=self.data_folder + '/train',
+                                          transform=transform)
         train_size = int((1 - self.val_size) * len(ddsm_train))
         val_size = int(self.val_ratio * len(ddsm_train))
         self.ddsm_train, self.ddsm_val = random_split(ddsm_train, [train_size, val_size])
-        
-        # load test dataset
-        self.ddsm_test = datasets.ImageFolder(root = self.data_folder+'/test'
-             transform=transform)
-
-    def train_dataloader(self):
         return DataLoader(self.ddsm_train, batch_size=self.batch_size, shuffle=True, num_workers=1)
 
     def val_dataloader(self):
         return DataLoader(self.ddsm_val, batch_size=self.batch_size, num_workers=1)
 
     def test_dataloader(self):
+        transform = transforms.Compose([
+            transforms.Resize(self.resizing_factor),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(self.mean, self.std)
+        ])
+
+        # load test dataset
+        self.ddsm_test = datasets.ImageFolder(root=self.data_folder + '/test',
+                                              transform=transform)
         return DataLoader(self.ddsm_test, batch_size=self.batch_size, num_workers=1)
 
     def get_history(self):
         return self.history
+    
+    def save_model(self, dst_path):
+        # save the entire model
+        torch.save(self.model, dst_path)

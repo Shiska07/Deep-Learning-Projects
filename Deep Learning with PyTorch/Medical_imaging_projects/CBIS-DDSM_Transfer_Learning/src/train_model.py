@@ -125,3 +125,6 @@ class TransferLearningPipiline:
                 
     def get_model(self):
         return self.model
+    
+    def save_model(self, dst_path):
+        self.model.save_model(dst_path)
