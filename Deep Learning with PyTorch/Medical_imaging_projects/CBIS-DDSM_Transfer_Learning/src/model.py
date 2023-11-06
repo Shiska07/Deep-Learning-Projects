@@ -83,8 +83,7 @@ class CBISDDSMClassifier(pl.LightningModule):
                     self.pretrained_model_path, map_location=torch.device('cpu'))            
 
     def forward(self, x):
-        x = self.model(x)
-        return x
+        return self.model(x)
     
     def configure_optimizers(self, mode = None):
         if mode == None:
@@ -244,7 +243,7 @@ class CBISDDSMClassifier(pl.LightningModule):
         ])
 
         # load train and validation datasets
-        ddsm_train = datasets.ImageFolder(root=self.data_folder + '/train',
+        ddsm_train = datasets.ImageFolder(root=str(self.data_folder + '/train'),
                                           transform=transform)
         train_size = int((1 - self.val_size) * len(ddsm_train))
         val_size = int(self.val_ratio * len(ddsm_train))
@@ -263,7 +262,7 @@ class CBISDDSMClassifier(pl.LightningModule):
         ])
 
         # load test dataset
-        self.ddsm_test = datasets.ImageFolder(root=self.data_folder + '/test',
+        self.ddsm_test = datasets.ImageFolder(root=str(self.data_folder + '/test'),
                                               transform=transform)
         return DataLoader(self.ddsm_test, batch_size=self.batch_size, num_workers=1)
 

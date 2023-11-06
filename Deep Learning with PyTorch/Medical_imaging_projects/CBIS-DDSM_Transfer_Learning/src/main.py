@@ -23,10 +23,9 @@ def main():
     
     # initialize model
     custom_model = CBISDDSMClassifier(parameters)
-    print(custom_model.model())
 
     # initialize transfer learning pipeline
-    #tl_pipeline = TransferLearningPipiline(custom_model, parameters)
+    tl_pipeline = TransferLearningPipiline(custom_model, parameters)
 
     # train model
     #tl_pipeline.train_custom_fc_layers()
