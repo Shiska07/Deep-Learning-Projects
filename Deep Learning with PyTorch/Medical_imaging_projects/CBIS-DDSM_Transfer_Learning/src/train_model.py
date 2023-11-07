@@ -22,7 +22,7 @@ class TransferLearningPipiline:
         self.n_finetune_conv = parameters['n_finetune_conv']
         self.batch_size = parameters['batch_size']
         
-        self.epochs = {}
+        self.epochs = dict()
         self.epochs['fc'] = parameters['epochs_fc']
         self.epochs['compfc'] = parameters['epochs_compfc']
         self.epochs['conv'] = parameters['epochs_conv']
@@ -126,5 +126,5 @@ class TransferLearningPipiline:
     def get_model(self):
         return self.model
     
-    def save_model(self, dst_path):
-        self.model.save_model(dst_path)
+    def save_model(self):
+        self.model.save_model()

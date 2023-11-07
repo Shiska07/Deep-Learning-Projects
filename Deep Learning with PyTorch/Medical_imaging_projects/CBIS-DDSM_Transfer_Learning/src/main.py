@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 import utils
-from model import CBISDDSMClassifier
+from models import CBISDDSMPatchClassifier
 from train_model import TransferLearningPipiline
 
 def main():
@@ -22,7 +22,7 @@ def main():
     parameters = utils.load_parameters(args.json_file)
     
     # initialize model
-    custom_model = CBISDDSMClassifier(parameters)
+    custom_model = CBISDDSMPatchClassifier(parameters)
 
     # initialize transfer learning pipeline
     tl_pipeline = TransferLearningPipiline(custom_model, parameters)
