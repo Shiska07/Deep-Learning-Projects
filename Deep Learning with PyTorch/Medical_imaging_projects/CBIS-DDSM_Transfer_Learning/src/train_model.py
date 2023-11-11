@@ -7,6 +7,7 @@ class TransferLearningPipiline:
         self.model = model
         self.pretrained_model_name = parameters['pretrained_model_name']
         self.plots_path = parameters['plots_path']
+        self.epoch_history_path = parameters['epoch_history_path']
         
         # funny connected layers to unfreeze from last
         self.n_fc = parameters['n_fc']                                   
@@ -49,7 +50,11 @@ class TransferLearningPipiline:
         # plot history
         plots_path = utils.save_plots(history, self.plots_path, self.pretrained_model_name, self.batch_size, 'fc')
         print(f'Custom fc training complete. Plots saved at {plots_path}\n')
-        
+
+        # save history
+        history_path = utils.save_history(history, self.epoch_history_path,
+                                          self.pretrained_model_name, self.batch_size, 'fc')
+        print(f'Successfully saved custom fc layers history file at {history_path}.\n')
         
     def train_all_fc_layers(self):
 
@@ -67,8 +72,12 @@ class TransferLearningPipiline:
         # plot history
         plots_path = utils.save_plots(history, self.plots_path,
                          self.pretrained_model_name, self.batch_size, 'compfc')
-
         print(f'Complete fc training complete. Plots saved at {plots_path}\n')
+
+        # save history
+        history_path = utils.save_history(history, self.epoch_history_path,
+                                          self.pretrained_model_name, self.batch_size, 'compfc')
+        print(f'Successfully saved complete fc layers history file at {history_path}.\n')
 
 
     def train_conv_layers(self):
@@ -87,8 +96,12 @@ class TransferLearningPipiline:
         # save history
         plots_path = utils.save_plots(history, self.plots_path,
                          self.pretrained_model_name, self.batch_size, 'conv')
-
         print(f'Convolutional layers training complete. Plots saved at {plots_path}\n')
+
+        # save history
+        history_path = utils.save_history(history, self.epoch_history_path,
+                                          self.pretrained_model_name, self.batch_size, 'conv')
+        print(f'Successfully saved convolutional layers history file at {history_path}.\n')
 
 
     def fine_tune_models(self):
@@ -107,8 +120,12 @@ class TransferLearningPipiline:
         # plot history
         plots_path = utils.save_plots(history, self.plots_path,
                          self.pretrained_model_name, self.batch_size, 'finetune')
-
         print(f'Model fine-tuning complete. Plots saved at {plots_path}.\n')
+
+        # save history
+        history_path = utils.save_history(history, self.epoch_history_path,
+                                          self.pretrained_model_name, self.batch_size, 'finetune')
+        print(f'Successfully saved fine-tuning history file at {history_path}.\n')
 
 
     # complete transfer learning pipeline
@@ -128,3 +145,6 @@ class TransferLearningPipiline:
     
     def save_model(self):
         self.model.save_model()
+
+    def save_model_history(self, mode):
+        utils.save_history(self.model.get_history(), self.epoch_history_path, self.pretrained_model_name, self.batch_size, mode)
