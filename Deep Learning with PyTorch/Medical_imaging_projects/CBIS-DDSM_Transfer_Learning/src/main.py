@@ -28,7 +28,7 @@ def main():
     tl_pipeline = TransferLearningPipiline(custom_model, parameters)
 
     # train model
-    #tl_pipeline.train_custom_fc_layers()
+    tl_pipeline.train_custom_fc_layers()
     #tl_pipeline.train()
     #tl_pipeline.test()
 

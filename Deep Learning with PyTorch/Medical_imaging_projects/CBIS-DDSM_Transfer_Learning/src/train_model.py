@@ -29,6 +29,8 @@ class TransferLearningPipiline:
         self.epochs['conv'] = parameters['epochs_conv']
         self.epochs['finetune'] = parameters['epochs_finetune']
 
+        self.trainer = None
+
     
     def initalize_trainer(self, mode):
         self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs[mode],
@@ -47,7 +49,7 @@ class TransferLearningPipiline:
         # get training history
         history = self.model.get_history()
 
-        # plot history
+        # save history plot
         plots_path = utils.save_plots(history, self.plots_path, self.pretrained_model_name, self.batch_size, 'fc')
         print(f'Custom fc training complete. Plots saved at {plots_path}\n')
 
@@ -69,7 +71,7 @@ class TransferLearningPipiline:
         # get training history
         history = self.model.get_history()
 
-        # plot history
+        # save history plot
         plots_path = utils.save_plots(history, self.plots_path,
                          self.pretrained_model_name, self.batch_size, 'compfc')
         print(f'Complete fc training complete. Plots saved at {plots_path}\n')
@@ -93,7 +95,7 @@ class TransferLearningPipiline:
         # get training history
         history = self.model.get_history()
 
-        # save history
+        # save history plot
         plots_path = utils.save_plots(history, self.plots_path,
                          self.pretrained_model_name, self.batch_size, 'conv')
         print(f'Convolutional layers training complete. Plots saved at {plots_path}\n')
@@ -117,7 +119,7 @@ class TransferLearningPipiline:
         # get training history
         history = self.model.get_history()
 
-        # plot history
+        # save history plot
         plots_path = utils.save_plots(history, self.plots_path,
                          self.pretrained_model_name, self.batch_size, 'finetune')
         print(f'Model fine-tuning complete. Plots saved at {plots_path}.\n')
@@ -147,4 +149,5 @@ class TransferLearningPipiline:
         self.model.save_model()
 
     def save_model_history(self, mode):
-        utils.save_history(self.model.get_history(), self.epoch_history_path, self.pretrained_model_name, self.batch_size, mode)
+        utils.save_history(self.model.get_history(), self.epoch_history_path,
+                           self.pretrained_model_name, self.batch_size, mode)

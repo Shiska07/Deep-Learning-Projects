@@ -17,7 +17,6 @@ def load_parameters(json_file):
 
 def save_history(history, history_dir, model_name, batch_size, training_type):
 
-    filename = 'history.csv'
     history_file_path =history_dir + \
         str(model_name) + '/batchsz' + str(batch_size) + '/' + str(training_type)
 
@@ -27,12 +26,10 @@ def save_history(history, history_dir, model_name, batch_size, training_type):
     except OSError as e:
         print(f"Error creating directory {history_file_path}: {e}")
 
-    file_path = os.path.join(history_file_path, filename)
 
-    # create dataframe from history
+    # create and save df
+    file_path = os.path.join(history_file_path, 'history.csv')
     df = pd.DataFrame(history)
-
-    # save df
     df.to_csv(file_path, index = False)
 
     return file_path

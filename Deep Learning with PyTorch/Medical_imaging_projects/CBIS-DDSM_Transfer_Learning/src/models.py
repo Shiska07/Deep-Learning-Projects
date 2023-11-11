@@ -17,8 +17,15 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         self.data_folder = parameters['data_folder']
         self.model_dest_folder = parameters['model_dst']
         self.num_classes = parameters['num_classes']
+        self.val_ratio = parameters['validation_ratio']
         self.loss_fn = nn.NLLLoss()
-    
+        self.ddsm_train, self.ddsm_val, self.ddsm_test = None, None, None
+
+        # transfer learning parameters
+        self.mean = (0.485, 0.456, 0.406)
+        self.std = (0.229, 0.224, 0.225)
+        self.classifiers_n = -1
+        self.features_n = -1
         
         # store learning rates for different layers
         self.lr = dict()
@@ -35,11 +42,6 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         self.history = {'train_loss': [], 'train_acc': [],
                     'val_loss': [], 'val_acc': []}
 
-        # transfer learning parameters
-        self.mean = (0.485, 0.456, 0.406)
-        self.std = (0.229, 0.224, 0.225)
-        self.classifiers_n = -1
-        self.features_n = -1
 
         # check for GPU availability
         use_gpu = torch.cuda.is_available()
@@ -79,7 +81,7 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         return self.model(x)
     
     def configure_optimizers(self, mode = None):
-        if mode == None:
+        if mode is None:
             optimizer = Adam(filter(lambda p: p.requires_grad,
                             self.model.parameters()), lr=0.001)
         else:
@@ -144,7 +146,7 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
 
     # set parameters for transfer learning
     def set_transfer_learning_params(self, unfreeze_n_fc, unfreeze_n_conv):
-        self.classifier_n = unfreeze_n_fc
+        self.classifiers_n = unfreeze_n_fc
         self.features_n = unfreeze_n_conv
         self.freeze_all_layers()
         self.unfreeze_last_n_fc_layers(unfreeze_n_fc)

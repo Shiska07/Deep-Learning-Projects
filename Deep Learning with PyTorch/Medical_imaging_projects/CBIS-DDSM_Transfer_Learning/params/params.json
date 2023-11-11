@@ -4,6 +4,7 @@
     "model_dst": "patch_classifier",
     "resizing_factor": 224,
     "num_classes": 3,
+    "validation_ratio": 0.3,
     "data_folder": "data/CBIS-DDSM/processed/aug_cropped/images",
     "logs_path": "output_logs/patch_classifier/logs",
     "plots_path": "output_logs/patch_classifier/plots",
