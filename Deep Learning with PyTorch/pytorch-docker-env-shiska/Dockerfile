@@ -1,4 +1,4 @@
-FROM shiska07/pytorch_lightning:latest
+FROM shiska07/pytorch_lightning:torchray
 
 # install required packages
 RUN pip install torchray

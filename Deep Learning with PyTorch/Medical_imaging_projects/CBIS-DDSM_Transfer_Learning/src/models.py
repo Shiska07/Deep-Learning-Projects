@@ -228,21 +228,24 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         print(f'Test Epoch loss: {avg_epoch_loss} Test epoch Acc: {avg_epoch_acc}')
         self.test_step_outputs.clear()
 
-    def train_dataloader(self):
-        transform = transforms.Compose([
-            transforms.Resize(self.resizing_factor),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize(self.mean, self.std)
-        ])
+    def setup(self, stage = None):
+        if stage == 'fit' or stage == 'validate':
+            transform = transforms.Compose([
+                transforms.Resize(self.resizing_factor),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize(self.mean, self.std)
+            ])
 
-        # load train and validation datasets
-        ddsm_train = datasets.ImageFolder(root=str(self.data_folder + '/train'),
-                                          transform=transform)
-        train_size = int((1 - self.val_size) * len(ddsm_train))
-        val_size = int(self.val_ratio * len(ddsm_train))
-        self.ddsm_train, self.ddsm_val = random_split(ddsm_train, [train_size, val_size])
-        return DataLoader(self.ddsm_train, batch_size=self.batch_size, shuffle=True, num_workers=1)
+            # load train and validation datasets
+            ddsm_train = datasets.ImageFolder(root=str(self.data_folder + 'train'),
+                                              transform=transform)
+            train_size = int((1 - self.val_size) * len(ddsm_train))
+            val_size = int(self.val_ratio * len(ddsm_train))
+            self.ddsm_train, self.ddsm_val = random_split(ddsm_train, [train_size, val_size])
+
+    def train_dataloader(self):
+        return DataLoader(self.ddsm_train, batch_size=self.batch_size, shuffle=True, num_workers=8)
 
     def val_dataloader(self):
         return DataLoader(self.ddsm_val, batch_size=self.batch_size, num_workers=1)
@@ -256,16 +259,16 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         ])
 
         # load test dataset
-        self.ddsm_test = datasets.ImageFolder(root=str(self.data_folder + '/test'),
+        self.ddsm_test = datasets.ImageFolder(root=str(self.data_folder + 'test'),
                                               transform=transform)
-        return DataLoader(self.ddsm_test, batch_size=self.batch_size, num_workers=1)
+        return DataLoader(self.ddsm_test, batch_size=self.batch_size, num_workers=8)
 
     def get_history(self):
         return self.history
     
     def save_model(self):
         # save the entire model
-        final_path = os.path.join(self.model_dest_folder, str(self.pretrained_model_name) + str(self.batch_size) + '.pth')
+        final_path = os.path.join(self.model_dest_folder, str(self.pretrained_model_name) + '_'+ str(self.batch_size) + '.pth')
         torch.save(self.model, final_path)
 
 
