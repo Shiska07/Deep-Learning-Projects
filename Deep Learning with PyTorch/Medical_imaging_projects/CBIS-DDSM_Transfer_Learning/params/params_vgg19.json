@@ -1,6 +1,6 @@
 {
-    "pretrained_model_name": "vgg16",
-    "pretrained_model_path": "/thesis_files/pretrained_models/vgg16.pth",
+    "pretrained_model_name": "vgg19",
+    "pretrained_model_path": "/thesis_files/pretrained_models/vgg19.pth",
     "model_dst": "/thesis_files/cbis-ddsm-proj/patch_classifiers",
     "modification_type": "final_fc",
     "resizing_factor": 224,
@@ -9,7 +9,7 @@
     "data_folder": "/thesis_files/data/CBIS-DDSM/cropped/images/",
     "logs_path": "/thesis_files/cbis-ddsm-proj/output_logs/patch_classifier/logs/",
     "plots_path": "/thesis_files/cbis-ddsm-proj/output_logs/patch_classifier/plots/",
-    "epoch_history_path": "/thesis_files/cbis-ddsm-proj/output_logs/patch_classifier/plots/history/",
+    "epoch_history_path": "/thesis_files/cbis-ddsm-proj/output_logs/patch_classifier/history/",
     "n_fc": 2,
     "lr_fc": 0.01,
     "epochs_fc": 20,

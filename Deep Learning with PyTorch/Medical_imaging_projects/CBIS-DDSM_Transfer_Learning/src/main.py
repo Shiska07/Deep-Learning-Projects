@@ -29,6 +29,7 @@ def main():
 
     # train model
     tl_pipeline.train_custom_fc_layers()
+
     #tl_pipeline.train()
     #tl_pipeline.test()
 

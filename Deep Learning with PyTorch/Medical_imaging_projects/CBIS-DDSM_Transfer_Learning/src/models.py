@@ -44,7 +44,6 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         self.history = {'train_loss': [], 'train_acc': [],
                     'val_loss': [], 'val_acc': []}
 
-
         # check for GPU availability
         use_gpu = torch.cuda.is_available()
 
@@ -68,7 +67,7 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
             custom_layers = get_layers(self.pretrained_model_name, self.num_classes, self.modification_type)
 
             if self.modification_type == 'final_fc':
-                self.model.classifier[-1] = custom_layers['final_clasifier']
+                self.model.classifier[-1] = custom_layers['final_classifier']
 
             else:
                 self.model.features[-1] = custom_layers['final_features']
@@ -76,12 +75,10 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
 
         elif self.pretrained_model_name in ['resnet34', 'resnet50']:
             custom_layers = get_layers(self.pretrained_model_name, self.num_classes, self.modification_type)
-
             self.model.fc = custom_layers['complete_fc']
 
         elif self.pretrained_model_name in ['efficientnet_b6', 'efficientnet_b7']:
             custom_layers = get_layers(self.pretrained_model_name, self.num_classes, self.modification_type)
-
             self.model.classifier = custom_layers['complete_fc']
 
 
@@ -167,10 +164,6 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         y_pred = torch.argmax(torch.exp(logits), 1)
         acc = (y_pred == y).sum().item()/self.batch_size
         self.training_step_outputs.append((loss.item(), acc))
-
-        # print metrics every 100th batch
-        if batch_idx % 100 == 0:
-            print(f'\nTraining step[Epoch({self.current_epoch})|batch({batch_idx})]: loss: {loss.item()}, acc:{acc}')
         return loss
 
     def on_train_epoch_end(self):
@@ -185,8 +178,7 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         avg_epoch_acc = cum_acc/num_items
         self.history['train_loss'].append(avg_epoch_loss)
         self.history['train_acc'].append(avg_epoch_acc)
-        for params in self.model.parameters():
-            print(params.requires_grad)
+        print(f'\nTraining Epoch({self.current_epoch}): loss: {avg_epoch_loss}, acc:{avg_epoch_acc}')
         self.training_step_outputs.clear()
 
     def validation_step(self, batch, batch_idx):
@@ -196,7 +188,6 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         y_pred = torch.argmax(torch.exp(logits), 1)
         acc = (y_pred == y).sum().item()/self.batch_size
         self.validation_step_outputs.append((loss.item(), acc))
-        print(f'\nVal step[batch({batch_idx})]: loss: {loss.item()}, acc:{acc}')
         return loss
 
     def on_validation_epoch_end(self):
@@ -211,6 +202,7 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         avg_epoch_acc = cum_acc/num_items
         self.history['val_loss'].append(avg_epoch_loss)
         self.history['val_acc'].append(avg_epoch_acc)
+        print(f'\nValidation Epoch({self.current_epoch}): loss: {avg_epoch_loss}, acc:{avg_epoch_acc}')
         self.validation_step_outputs.clear()
 
     def test_step(self, batch, batch_idx):
@@ -240,7 +232,6 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         if stage == 'fit' or stage == 'validate':
             transform = transforms.Compose([
                 transforms.Resize((self.resizing_factor, self.resizing_factor)),
-                transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 transforms.Normalize(self.mean, self.std)
             ])
@@ -261,7 +252,6 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
     def test_dataloader(self):
         transform = transforms.Compose([
             transforms.Resize((self.resizing_factor, self.resizing_factor)),
-            transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             transforms.Normalize(self.mean, self.std)
         ])
@@ -272,7 +262,14 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         return DataLoader(self.ddsm_test, batch_size=self.batch_size, num_workers=8)
 
     def get_history(self):
+        # remove the first validation epoch data
+        self.history['val_loss'].pop(0)
+        self.history['val_acc'].pop(0)
         return self.history
+
+    def clear_history(self):
+        for key in self.history:
+            self.history[key] = []
     
     def save_model(self):
         # save the entire model

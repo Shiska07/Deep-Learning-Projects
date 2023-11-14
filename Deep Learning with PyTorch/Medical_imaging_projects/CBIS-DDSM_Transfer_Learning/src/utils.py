@@ -28,12 +28,21 @@ def save_history(history, history_dir, model_name, batch_size, training_type):
 
 
     # create and save df
-    file_path = os.path.join(history_file_path, 'history.csv')
+    file_path = os.path.join(history_file_path, f'history.csv')
+    if os.path.isfile(file_path):
+        os.remove(file_path)
     df = pd.DataFrame(history)
     df.to_csv(file_path, index = False)
 
     return file_path
 
+
+def save_hyperparams(history_dir, h_params):
+
+    # save hyperpapramters dictionary as a .json file
+    file_path = os.path.join(history_dir, 'hyperparameters.json')
+    with open(file_path, 'w') as json_file:
+        json.dump(h_params, json_file)
 
 def save_plots(history, plots_dir, model_name, batch_size, training_type):
     train_loss = history['train_loss']
@@ -57,7 +66,10 @@ def save_plots(history, plots_dir, model_name, batch_size, training_type):
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
+    plt.grid()
     name = os.path.join(plots_file_path, 'loss.jpeg')
+    if os.path.isfile(name):
+        os.remove(name)
     plt.savefig(name)
 
     # create train_acc vs. val_acc
@@ -68,7 +80,10 @@ def save_plots(history, plots_dir, model_name, batch_size, training_type):
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
+    plt.grid()
     name = os.path.join(plots_file_path, 'acc.jpeg')
+    if os.path.isfile(name):
+        os.remove(name)
     plt.savefig(name)
 
     return plots_file_path
