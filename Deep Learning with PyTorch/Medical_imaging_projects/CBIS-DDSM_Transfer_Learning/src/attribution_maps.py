@@ -4,10 +4,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import torchvision
-from torch.optim import Adam
 from torchvision import datasets, transforms, models
 from torchvision.io import read_image
 from torch.utils.data import DataLoader, Dataset, random_split
@@ -94,7 +91,6 @@ def get_attention_map(model, x, x_fullsize, layer, alpha):
     return overlaid_image
 
 
-
 def get_test_dataloader(image_folder_path, annotations_file_path):
 
     # create two datsets, one with original size and one resized
@@ -108,14 +104,29 @@ def get_test_dataloader(image_folder_path, annotations_file_path):
     return dataloader_test_fullsize, dataloader_test
 
 
-def save_attribution_maps(model_architecture_path, model_weights_path, test_annotations_path, test_images_path, layer_number_list, model_name):
+def save_attribution_maps(model_architecture_path, model_weights_path, data_folder_path, layer_number, model_name):
 
     # load model
     trained_model = TrainedModel(model_architecture_path, model_weights_path, model_name)
 
     # get dataloaders
+    test_annotations_path = os.path.join(data_folder_path, 'annotations.csv')
+    test_images_path = os.path.join(data_folder_path, 'allimages')
     dataloader_fullsz, dataloader_norm = get_test_dataloader(test_images_path, test_annotations_path)
 
+    # create destination folder
+    dest_folder_path = os.path.join(data_folder_path, 'atribution_maps')
+    if not os.path.exists(data_folder_path):
+        os.makedirs(dest_folder_path)
 
+    # iterate through images and save attrbution maps
+    for vals1, vals2 in zip(dataloader_fullsz, dataloader_norm):
+        imagef, labelf, _ = vals1
+        imagen, labeln, img_name = vals2
 
+        attribution_map = get_attention_map(trained_model, imagen[0], imagef[0], layer_number, 0.3)
+        attribution_map_path = os.path.join(dest_folder_path, img_name)
+        cv2.imwrite(attribution_map_path, attribution_map)
+
+    print(f'Attribution maps for {model_name} layer {layer_number} saved at {dest_folder_path}.\n')
 

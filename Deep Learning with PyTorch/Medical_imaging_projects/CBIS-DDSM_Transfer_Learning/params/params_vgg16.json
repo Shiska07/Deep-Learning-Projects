@@ -7,8 +7,7 @@
     "num_classes": 3,
     "validation_ratio": 0.3,
     "data_folder": "/thesis_files/data/CBIS-DDSM/cropped/images/",
-    "test_annotations_path": "/thesis_files/data/CBIS-DDSM/cropped/images/",
-    "test_images_path": "/thesis_files/data/CBIS-DDSM/cropped/images/",
+    "attr_data_path": "/thesis_files/data/CBIS-DDSM/cropped/images/",
     "logs_path": "/thesis_files/cbis-ddsm-proj/output_logs/patch_classifier/logs/",
     "plots_path": "/thesis_files/cbis-ddsm-proj/output_logs/patch_classifier/plots/",
     "epoch_history_path": "/thesis_files/cbis-ddsm-proj/output_logs/patch_classifier/history/",
@@ -26,5 +25,5 @@
     "lr_finetune": 0.001,
     "epochs_finetune": 25,
     "batch_size": 64,
-    "attribution_layers": [26, 28]
+    "attribution_layer":  28
 }

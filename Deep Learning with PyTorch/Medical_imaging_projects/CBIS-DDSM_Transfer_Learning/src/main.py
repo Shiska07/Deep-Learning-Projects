@@ -37,8 +37,8 @@ def main():
     # save model
     model_arc_path, model_weights_path = tl_pipeline.save_model()
 
-    save_attribution_maps(model_arc_path, model_weights_path, parameters['test_annotations_path'], parameters['test_images_path'],
-                          parameters['attribution_layers'], parameters['pretrained_model_name'])
+    save_attribution_maps(model_arc_path, model_weights_path, parameters['arrt_data_path'],
+                          parameters['attribution_layer'], parameters['pretrained_model_name'])
 
 
 if __name__ == "__main__":
