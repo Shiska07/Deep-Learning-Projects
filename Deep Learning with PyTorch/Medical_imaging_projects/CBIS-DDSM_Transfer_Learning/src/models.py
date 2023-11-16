@@ -28,6 +28,10 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         self.std = (0.229, 0.224, 0.225)
         self.classifiers_n = -1
         self.features_n = -1
+
+        # activation maps parameters
+        self.layers_for_gradcam = [29]
+        self.activation_maps_enabled = False
         
         # store learning rates for different layers
         self.lr = dict()
@@ -212,7 +216,6 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         y_pred = torch.argmax(torch.exp(logits), 1)
         acc = (y_pred == y).sum().item() / self.batch_size
         self.test_step_outputs.append((loss.item(), acc))
-        print(f'\nTest step: loss: {loss.item()}, acc:{acc}')
         return loss
 
     def on_test_epoch_end(self):
@@ -259,7 +262,7 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         # load test dataset
         self.ddsm_test = datasets.ImageFolder(root=str(self.data_folder + 'test'),
                                               transform=transform)
-        return DataLoader(self.ddsm_test, batch_size=self.batch_size, num_workers=8)
+        return DataLoader(self.ddsm_test, batch_size=1, num_workers=8)
 
     def get_history(self):
         # remove the first validation epoch data
@@ -273,7 +276,14 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
     
     def save_model(self):
         # save the entire model
-        final_path = os.path.join(self.model_dest_folder, str(self.pretrained_model_name) + '_'+ str(self.batch_size) + '.pth')
-        torch.save(self.model, final_path)
+        model_architecture_path = os.path.join(self.model_dest_folder, str(self.pretrained_model_name) + '_'+ str(self.batch_size) + 'arc.pth')
+        model_weights_path = os.path.join(self.model_dest_folder, str(self.pretrained_model_name) + '_' + str(
+            self.batch_size) + 'weights.pth')
+        torch.save(self.model, model_architecture_path )
+        torch.save(self.model.state_dict(), model_architecture_path )
+        print(f'Model saved at {self.model_dest_folder}')
+
+        # return paths tp model architecture and weights
+        return model_architecture_path, model_weights_path
 
 

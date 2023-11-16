@@ -4,6 +4,7 @@ import argparse
 import utils
 from models import CBISDDSMPatchClassifier
 from train_model import TransferLearningPipiline
+from attribution_maps import save_attribution_maps
 
 def main():
     
@@ -31,7 +32,13 @@ def main():
     tl_pipeline.train_custom_fc_layers()
 
     #tl_pipeline.train()
-    #tl_pipeline.test()
+    tl_pipeline.test_model()
+
+    # save model
+    model_arc_path, model_weights_path = tl_pipeline.save_model()
+
+    save_attribution_maps(model_arc_path, model_weights_path, parameters['test_annotations_path'], parameters['test_images_path'],
+                          parameters['attribution_layers'], parameters['pretrained_model_name'])
 
 
 if __name__ == "__main__":

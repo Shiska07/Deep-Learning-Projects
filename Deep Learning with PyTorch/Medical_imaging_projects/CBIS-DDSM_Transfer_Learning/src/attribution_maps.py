@@ -13,6 +13,8 @@ from torchvision.io import read_image
 from torch.utils.data import DataLoader, Dataset, random_split
 from attribution_model import TrainedModel
 
+from utils import CustomTestDataset
+
 import cv2
 import captum
 from captum.attr import LayerGradCam, LayerAttribution
@@ -93,12 +95,12 @@ def get_attention_map(model, x, x_fullsize, layer, alpha):
 
 
 
-def get_test_dataloader(data_folder_path):
+def get_test_dataloader(image_folder_path, annotations_file_path):
 
     # create two datsets, one with original size and one resized
-    ddsm_test_fullsize = datasets.ImageFolder(root=str(data_folder_path + 'test'),
+    ddsm_test_fullsize = CustomTestDataset(image_folder_path, annotations_file_path,
                                           transform=transforms.ToTensor())
-    ddsm_test = datasets.ImageFolder(root=str(data_folder_path + 'test'),
+    ddsm_test = CustomTestDataset(image_folder_path, annotations_file_path,
                                           transform=transform)
 
     dataloader_test_fullsize = DataLoader(ddsm_test_fullsize, batch_size=1, num_workers=8)
@@ -106,13 +108,13 @@ def get_test_dataloader(data_folder_path):
     return dataloader_test_fullsize, dataloader_test
 
 
-def save_attribution_maps(model_architecture_path, model_weights_path, data_folder_path, layer_number_list, model_name):
+def save_attribution_maps(model_architecture_path, model_weights_path, test_annotations_path, test_images_path, layer_number_list, model_name):
 
     # load model
     trained_model = TrainedModel(model_architecture_path, model_weights_path, model_name)
 
     # get dataloaders
-    dataloader_fullsz, dataloader_norm = get_test_dataloader(data_folder_path)
+    dataloader_fullsz, dataloader_norm = get_test_dataloader(test_images_path, test_annotations_path)
 
 
 

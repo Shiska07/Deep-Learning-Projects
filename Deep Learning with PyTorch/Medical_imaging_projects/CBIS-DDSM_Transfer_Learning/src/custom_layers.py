@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 # define some contastants
-VGG_OUT_FEAT_CLASSIFIER = 4096     # output dim of the final fc layer
+VGG_OUT_CLASSIFIER = 4096     # output dim of the final fc layer
 VGG_OUT_FEATURES = 7*7*512    # output dim of the last conv block
 VGG_OUT_CHANNELS = 512
 
@@ -14,7 +14,7 @@ def get_layers(model_name, num_classes, modification_type):
     if model_name == 'vgg16':
         if modification_type == 'final_fc':
 
-            custom_layers['final_classifier'] =  nn.Sequential(nn.Linear(VGG_OUT_FEAT_CLASSIFIER, 512),
+            custom_layers['final_classifier'] =  nn.Sequential(nn.Linear(VGG_OUT_CLASSIFIER, 512),
                                 nn.ReLU(),
                                 nn.Dropout(0.5),
                                 nn.Linear(512, num_classes),

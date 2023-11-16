@@ -35,7 +35,7 @@ class TransferLearningPipiline:
     
     def initalize_trainer(self, mode):
         self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs[mode],
-                                 enable_progress_bar=False,  enable_checkpointing=False, logger=False)
+                                 enable_progress_bar=False, enable_checkpointing=True, logger=False)
 
     def train_custom_fc_layers(self):
         
@@ -139,22 +139,22 @@ class TransferLearningPipiline:
 
 
     # complete transfer learning pipeline
-    def train(self):
+    def train_model(self):
         self.train_custom_fc_layers()
         self.train_all_fc_layers()
         self.train_conv_layers()
         self.fine_tune_models()
     
     # run test    
-    def test(self):
+    def test_model(self):
         # call test off the most current trainer
-        self.trainer.test()
+        self.trainer.test(self.model)
                 
     def get_model(self):
         return self.model
     
     def save_model(self):
-        self.model.save_model()
+        return self.model.save_model()
 
     def save_model_history(self, mode):
         utils.save_history(self.model.get_history(), self.epoch_history_path,
