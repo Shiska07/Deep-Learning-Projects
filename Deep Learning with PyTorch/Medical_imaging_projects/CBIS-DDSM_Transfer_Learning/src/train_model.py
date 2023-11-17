@@ -1,6 +1,8 @@
 import os
 import utils
 import pytorch_lightning as pl
+from pytorch_lightning.callbacks import ModelCheckpoint
+
 
 class TransferLearningPipiline:
     def __init__(self, model, parameters):
@@ -9,6 +11,7 @@ class TransferLearningPipiline:
         self.pretrained_model_name = parameters['pretrained_model_name']
         self.plots_path = parameters['plots_path']
         self.epoch_history_path = parameters['epoch_history_path']
+        self.model_dest = parameters['model_dst']
         
         # funny connected layers to unfreeze from last
         self.n_fc = parameters['n_fc']                                   
@@ -34,8 +37,17 @@ class TransferLearningPipiline:
 
     
     def initalize_trainer(self, mode):
+        checkpoint_path = os.path.join(self.model_dest, self.pretrained_model_name, self.batch_size, mode, self.model.lr[mode])
+        checkpoint_callback = ModelCheckpoint(
+            save_top_k=10,
+            monitor="val_loss",
+            mode="min",
+            dirpath=checkpoint_path,
+            every_n_epochs = 10,
+            filename="cbis-ddsm-{epoch:02d}-{val_loss:.2f}",
+        )
         self.trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=self.epochs[mode],
-                                 enable_progress_bar=False, enable_checkpointing=True, logger=False)
+                                 enable_progress_bar=False, enable_checkpointing=True, callbacks=[checkpoint_callback], logger=False)
 
     def train_custom_fc_layers(self):
         
