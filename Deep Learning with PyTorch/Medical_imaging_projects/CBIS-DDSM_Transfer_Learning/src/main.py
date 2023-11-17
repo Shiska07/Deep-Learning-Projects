@@ -29,10 +29,6 @@ def main():
             tl_pipeline.train_model()
             tl_pipeline.test_model()
 
-            # save model
-            tl_pipeline.save_model()
-
-
 
 if __name__ == "__main__":
     main()

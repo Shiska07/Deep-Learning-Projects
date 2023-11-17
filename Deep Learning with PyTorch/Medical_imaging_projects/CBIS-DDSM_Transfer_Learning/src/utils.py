@@ -18,7 +18,7 @@ def load_parameters(json_file):
 def save_history(history, history_dir, model_name, batch_size, training_type, lr, h_params):
 
     history_file_path = os.path.join(history_dir,
-        str(model_name), str(batch_size),str(training_type), str(lr))
+        str(model_name), str(batch_size), str(training_type), str(lr))
 
     # create directory if non-existent
     try:

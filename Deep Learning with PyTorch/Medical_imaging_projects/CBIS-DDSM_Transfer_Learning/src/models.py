@@ -35,10 +35,10 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         
         # store learning rates for different layers
         self.lr = dict()
-        self.lr['lr_fc'] = parameters['lr_fc']
-        self.lr['lr_compfc'] = parameters['lr_compfc']
-        self.lr['lr_conv'] = parameters['lr_conv']
-        self.lr['lr_finetune'] = parameters['lr_finetune']
+        self.lr['fc'] = parameters['lr_fc']
+        self.lr['compfc'] = parameters['lr_compfc']
+        self.lr['conv'] = parameters['lr_conv']
+        self.lr['finetune'] = parameters['lr_finetune']
         
         # lists to store outputs from each train/val step
         self.training_step_outputs = []
@@ -262,7 +262,7 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         # load test dataset
         self.ddsm_test = datasets.ImageFolder(root=str(self.data_folder + 'test'),
                                               transform=transform)
-        return DataLoader(self.ddsm_test, batch_size=1, num_workers=8)
+        return DataLoader(self.ddsm_test, batch_size=self.batch_size, num_workers=8)
 
     def get_history(self):
         # remove the first validation epoch data
