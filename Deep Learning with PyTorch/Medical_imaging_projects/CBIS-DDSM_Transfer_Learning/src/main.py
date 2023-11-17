@@ -1,44 +1,37 @@
 import os
-import sys
 import argparse
 import utils
 from models import CBISDDSMPatchClassifier
 from train_model import TransferLearningPipiline
-from attribution_maps import save_attribution_maps
 
 def main():
-    
-    # Create a command-line argument parser
-    parser = argparse.ArgumentParser(
-        description='Load parameters from a JSON file.')
 
-    # Add a command-line argument for the JSON file
-    parser.add_argument('json_file', type=str,
-                        help='Path to the JSON file containing parameters.')
-
-    # Parse the command-line arguments
+    parser = argparse.ArgumentParser(description="Load JSON files from a directory")
+    parser.add_argument("folder_name", help="Name of the folder containing JSON files")
     args = parser.parse_args()
+    folder_name = args.folder_name
+    directory_path = os.path.abspath(folder_name)
 
-    # Load parameters from the JSON file
-    parameters = utils.load_parameters(args.json_file)
+    for filename in os.listdir(directory_path):
+
+        if filename.endswith('.json'):
+            file_path = os.path.join(directory_path, filename)
+
+            parameters = utils.load_parameters(file_path)
     
-    # initialize model
-    custom_model = CBISDDSMPatchClassifier(parameters)
+            # initialize model
+            custom_model = CBISDDSMPatchClassifier(parameters)
 
-    # initialize transfer learning pipeline
-    tl_pipeline = TransferLearningPipiline(custom_model, parameters)
+            # initialize transfer learning pipeline
+            tl_pipeline = TransferLearningPipiline(custom_model, parameters)
 
-    # train model
-    tl_pipeline.train_custom_fc_layers()
+            # train and test model
+            tl_pipeline.train_model()
+            tl_pipeline.test_model()
 
-    #tl_pipeline.train()
-    tl_pipeline.test_model()
+            # save model
+            tl_pipeline.save_model()
 
-    # save model
-    model_arc_path, model_weights_path = tl_pipeline.save_model()
-
-    save_attribution_maps(model_arc_path, model_weights_path, parameters['arrt_data_path'],
-                          parameters['attribution_layer'], parameters['pretrained_model_name'])
 
 
 if __name__ == "__main__":

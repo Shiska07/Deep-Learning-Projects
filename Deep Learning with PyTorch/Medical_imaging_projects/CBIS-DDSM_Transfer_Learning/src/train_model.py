@@ -154,7 +154,7 @@ class TransferLearningPipiline:
         return self.model
     
     def save_model(self):
-        return self.model.save_model()
+        self.model.save_model()
 
     def save_model_history(self, mode):
         utils.save_history(self.model.get_history(), self.epoch_history_path,

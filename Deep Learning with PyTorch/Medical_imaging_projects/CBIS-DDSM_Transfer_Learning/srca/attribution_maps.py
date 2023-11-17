@@ -1,28 +1,14 @@
 import os
-import numpy as np
-from PIL import Image
-import matplotlib.pyplot as plt
-
-import torch
-import torchvision
-from torchvision import datasets, transforms, models
-from torchvision.io import read_image
-from torch.utils.data import DataLoader, Dataset, random_split
-from attribution_model import TrainedModel
-
-from utils import CustomTestDataset
-
 import cv2
-import captum
+import torch
+import numpy as np
+import torch.nn as nn
+from torchvision import transforms
+from torch.utils.data import DataLoader, Dataset
+from utils import CustomTestDataset, mean, std, normalize_image
 from captum.attr import LayerGradCam, LayerAttribution
-from captum.attr import visualization as viz
-from matplotlib.colors import LinearSegmentedColormap
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-# these are the mean and std of the data per channel
-mean = [0.485, 0.456, 0.406]
-std = [0.229, 0.224, 0.225]
 
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
@@ -30,31 +16,15 @@ transform = transforms.Compose([
     transforms.Normalize(mean=mean, std=std)
     ])
 
-def denormalize(tensor):
-    tensor = tensor*std + mean
-    return tensor
+class TrainedModel(nn.Module):
+    def __init__(self, model_arc_path, model_weights_path, name):
+        super(TrainedModel, self).__init__()
+        self.model = torch.load(model_arc_path)
+        self.model.load_state_dict(torch.load(model_weights_path))
+        self.name = name
 
-# function for viewling image
-def show_img(img):
-    # arrange channels
-    img = img.numpy().transpose((1,2,0))
-
-    # use mean and std values
-    img = denormalize(img)
-
-    # clip values and view image
-    rgb_img = np.clip(img,0,1)
-
-    return np.float32(rgb_img)
-
-
-def normalize_image(img):
-    min_val = np.min(img)
-    max_val = np.max(img)
-
-    normalized_img = (img - min_val) / (max_val - min_val)
-    normalized_img *= 255
-    return normalized_img.astype(int)
+    def forward(self, x):
+        return self.model(x)
 
 
 def get_attention_map(model, x, x_fullsize, layer, alpha):

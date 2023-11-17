@@ -283,7 +283,3 @@ class CBISDDSMPatchClassifier(pl.LightningModule):
         torch.save(self.model.state_dict(), model_architecture_path )
         print(f'Model saved at {self.model_dest_folder}')
 
-        # return paths tp model architecture and weights
-        return model_architecture_path, model_weights_path
-
-
