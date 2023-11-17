@@ -20,10 +20,10 @@
     "n_conv": 2,
     "lr_conv": 0.003,
     "epochs_conv": 10,
-    "n_finetune_fc": 2,
-    "n_finetune_conv": 0,
+    "n_finetune_fc": 0,
+    "n_finetune_conv": 2,
     "lr_finetune": 0.001,
-    "epochs_finetune": 20,
+    "epochs_finetune": 10,
     "batch_size": 32,
     "attribution_layer": 28
 }

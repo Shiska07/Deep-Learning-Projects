@@ -28,14 +28,14 @@ def save_history(history, history_dir, model_name, batch_size, training_type, lr
 
 
     # create and save df
-    file_path = os.path.join(history_file_path, f'history.csv')
+    file_path = os.path.join(history_file_path, f'history{training_type}.csv')
     if os.path.isfile(file_path):
         os.remove(file_path)
     df = pd.DataFrame(history)
     df.to_csv(file_path, index = False)
 
     hp_file_path = os.path.join(history_dir,
-                             str(model_name), str(batch_size), str(training_type), str(lr), 'hyperparameters.json')
+                             str(model_name), str(batch_size), str(training_type), str(lr), f'hyperparameters{training_type}.json')
     with open(hp_file_path, 'w') as json_file:
         json.dump(h_params, json_file)
 
@@ -56,11 +56,12 @@ def save_plots(history, plots_dir, model_name, batch_size, training_type, lr):
     except OSError as e:
         print(f"Error creating directory {plots_file_path}: {e}")
 
+    plt.figure(figsize=(16, 12))
     # create train_loss vs. val_loss
-    plt.figure(figsize=(8, 6))
+    plt.subplot(1, 2, 1)
     plt.plot(train_loss, label='Train Loss', color='blue')
     plt.plot(val_loss, label='Validation Loss', color='red')
-    plt.title('Training Vs Validation Loss')
+    plt.title(f'Training Vs Validation Loss {training_type}')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
@@ -72,9 +73,10 @@ def save_plots(history, plots_dir, model_name, batch_size, training_type, lr):
 
     # create train_acc vs. val_acc
     plt.figure(figsize=(8, 6))
+    plt.subplot(1, 2, 2)
     plt.plot(train_acc, label='Train Accuracy', color='blue')
     plt.plot(val_acc, label='Validation Accuracy', color='red')
-    plt.title('Training Vs Validation Accuracy')
+    plt.title(f'Training Vs Validation Accuracy {training_type}')
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()

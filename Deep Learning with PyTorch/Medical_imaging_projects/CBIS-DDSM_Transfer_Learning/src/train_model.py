@@ -50,7 +50,9 @@ class TransferLearningPipiline:
 
         # train model
         self.initalize_trainer('fc')
+        print('BEGIN training custom fully connected layers.\n')
         self.trainer.fit(self.model)
+        print('END training custom fully connected layers.\n')
 
         # save history plot and data
         history = self.model.get_history()
@@ -70,7 +72,7 @@ class TransferLearningPipiline:
 
         # freeze all layers except the last two fc layers
         self.model.set_transfer_learning_params(self.n_compfc, -1)
-        self.model.configure_optimizers('lr_compfc')
+        self.model.configure_optimizers('compfc')
         self.model.clear_history()
 
         # train model
@@ -96,7 +98,7 @@ class TransferLearningPipiline:
 
     def train_conv_layers(self):
 
-        # freeze all layers except the last two fc layers
+        # freeze all layers except the last two conv layers
         self.model.set_transfer_learning_params(-1, self.n_conv)
         self.model.configure_optimizers('conv')
         self.model.clear_history()
@@ -149,10 +151,16 @@ class TransferLearningPipiline:
 
     # complete transfer learning pipeline
     def train_model(self):
-        self.train_custom_fc_layers()
-        self.train_all_fc_layers()
-        self.train_conv_layers()
-        self.fine_tune_models()
+        if self.pretrained_model_name in ['vgg16', 'vgg19']:
+            self.train_custom_fc_layers()
+            self.train_all_fc_layers()
+            self.train_conv_layers()
+            self.fine_tune_models()
+
+        elif self.pretrained_model_name in ['resnet34', 'resnet50']:
+            self.train_custom_fc_layers()
+            self.train_conv_layers()
+            self.fine_tune_models()
     
     # run test    
     def test_model(self):
