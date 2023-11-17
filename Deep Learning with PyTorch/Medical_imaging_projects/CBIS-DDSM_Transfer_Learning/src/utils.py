@@ -2,10 +2,6 @@ import os
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
-from PIL import Image
-from torchvision import transforms
-from torch.utils.data import Dataset, DataLoader
-
 
 def load_parameters(json_file):
     try:
@@ -19,10 +15,10 @@ def load_parameters(json_file):
         print(f"Error: JSON file '{json_file}' is not a valid JSON file.")
         return None
 
-def save_history(history, history_dir, model_name, batch_size, training_type):
+def save_history(history, history_dir, model_name, batch_size, training_type, lr, h_params):
 
-    history_file_path =history_dir + \
-        str(model_name) + '/batchsz' + str(batch_size) + '/' + str(training_type)
+    history_file_path = os.path.join(history_dir,
+        str(model_name), str(batch_size),str(training_type), str(lr))
 
     # create directory if non-existent
     try:
@@ -38,24 +34,22 @@ def save_history(history, history_dir, model_name, batch_size, training_type):
     df = pd.DataFrame(history)
     df.to_csv(file_path, index = False)
 
+    hp_file_path = os.path.join(history_dir,
+                             str(model_name), str(batch_size), str(training_type), str(lr), 'hyperparameters.json')
+    with open(hp_file_path, 'w') as json_file:
+        json.dump(h_params, json_file)
+
     return file_path
 
 
-def save_hyperparams(history_dir, h_params):
-
-    # save hyperpapramters dictionary as a .json file
-    file_path = os.path.join(history_dir, 'hyperparameters.json')
-    with open(file_path, 'w') as json_file:
-        json.dump(h_params, json_file)
-
-def save_plots(history, plots_dir, model_name, batch_size, training_type):
+def save_plots(history, plots_dir, model_name, batch_size, training_type, lr):
     train_loss = history['train_loss']
     val_loss = history['val_loss']
     train_acc = history['train_acc']
     val_acc = history['val_acc']
     
-    plots_file_path = plots_dir + \
-        str(model_name) + '/batchsz' + str(batch_size) + '/' + str(training_type)
+    plots_file_path = os.path.join(plots_dir,
+        str(model_name), str(batch_size),str(training_type), str(lr))
     # create directory if non-existent
     try:
         os.makedirs(plots_file_path, exist_ok=True)

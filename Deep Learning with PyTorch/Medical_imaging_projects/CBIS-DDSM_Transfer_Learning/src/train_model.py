@@ -50,15 +50,15 @@ class TransferLearningPipiline:
 
         # save history plot and data
         history = self.model.get_history()
-        plots_path = utils.save_plots(history, self.plots_path, self.pretrained_model_name, self.batch_size, 'fc')
+        keys = ['epochs_fc', 'lr_fc']
+        h_params = {key: self.params[key] for key in keys}
+        plots_path = utils.save_plots(history, self.plots_path, self.pretrained_model_name, self.batch_size, 'fc', self.model.lr['lr_fc'])
         print(f'Custom fc training complete. Plots saved at {plots_path}\n')
 
         history_path = utils.save_history(history, self.epoch_history_path,
-                                          self.pretrained_model_name, self.batch_size, 'fc')
+                                          self.pretrained_model_name, self.batch_size, 'fc', self.model.lr['lr_fc'], h_params)
 
-        keys = ['epochs_fc', 'lr_fc']
-        h_params = {key:self.params[key] for key in keys}
-        utils.save_hyperparams(self.epoch_history_path, h_params)
+
         print(f'Successfully saved custom fc layers history file at {history_path}.\n')
 
 
@@ -76,15 +76,16 @@ class TransferLearningPipiline:
 
         # save history plot and data
         history = self.model.get_history()
+        keys = ['epochs_compfc', 'lr_compfc']
+        h_params = {key: self.params[key] for key in keys}
         plots_path = utils.save_plots(history, self.plots_path,
-                         self.pretrained_model_name, self.batch_size, 'compfc')
+                         self.pretrained_model_name, self.batch_size, 'compfc', self.model.lr['lr_compfc'])
         print(f'Complete fc training complete. Plots saved at {plots_path}\n')
 
         history_path = utils.save_history(history, self.epoch_history_path,
-                                          self.pretrained_model_name, self.batch_size, 'compfc')
-        keys = ['epochs_compfc', 'lr_compfc']
-        h_params = {key: self.params[key] for key in keys}
-        utils.save_hyperparams(self.epoch_history_path, h_params)
+                                          self.pretrained_model_name, self.batch_size, 'compfc', self.model.lr['lr_compfc'], h_params)
+
+
         print(f'Successfully saved complete fc layers history file at {history_path}.\n')
 
 
@@ -101,15 +102,15 @@ class TransferLearningPipiline:
 
         # save history plot and data
         history = self.model.get_history()
+        keys = ['epochs_conv', 'lr_conv']
+        h_params = {key: self.params[key] for key in keys}
         plots_path = utils.save_plots(history, self.plots_path,
-                         self.pretrained_model_name, self.batch_size, 'conv')
+                         self.pretrained_model_name, self.batch_size, 'conv', self.model.lr['lr_conv'])
         print(f'Convolutional layers training complete. Plots saved at {plots_path}\n')
 
         history_path = utils.save_history(history, self.epoch_history_path,
-                                          self.pretrained_model_name, self.batch_size, 'conv')
-        keys = ['epochs_conv', 'lr_conv']
-        h_params = {key: self.params[key] for key in keys}
-        utils.save_hyperparams(self.epoch_history_path, h_params)
+                                          self.pretrained_model_name, self.batch_size, 'conv', self.model.lr['lr_conv'], h_params)
+
         print(f'Successfully saved convolutional layers history file at {history_path}.\n')
 
 
@@ -126,15 +127,14 @@ class TransferLearningPipiline:
 
         # save history plot and data
         history = self.model.get_history()
+        keys = ['epochs_finetune', 'lr_finetune']
+        h_params = {key: self.params[key] for key in keys}
         plots_path = utils.save_plots(history, self.plots_path,
-                         self.pretrained_model_name, self.batch_size, 'finetune')
+                         self.pretrained_model_name, self.batch_size, 'finetune', self.model.lr['lr_finetune'])
         print(f'Model fine-tuning complete. Plots saved at {plots_path}.\n')
 
         history_path = utils.save_history(history, self.epoch_history_path,
-                                          self.pretrained_model_name, self.batch_size, 'finetune')
-        keys = ['epochs_finetune', 'lr_finetune']
-        h_params = {key: self.params[key] for key in keys}
-        utils.save_hyperparams(self.epoch_history_path, h_params)
+                                          self.pretrained_model_name, self.batch_size, 'finetune', self.model.lr['lr_finetune'], h_params)
         print(f'Successfully saved fine-tuning history file at {history_path}.\n')
 
 
@@ -155,7 +155,3 @@ class TransferLearningPipiline:
     
     def save_model(self):
         self.model.save_model()
-
-    def save_model_history(self, mode):
-        utils.save_history(self.model.get_history(), self.epoch_history_path,
-                           self.pretrained_model_name, self.batch_size, mode)
