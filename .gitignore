@@ -5,3 +5,5 @@ pretrained_models/
 output_logs/
 params/
 dockerfiles/
+.idea/
+.ipynb_checkpoints/
