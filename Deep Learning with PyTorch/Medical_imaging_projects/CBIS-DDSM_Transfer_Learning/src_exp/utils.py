@@ -67,7 +67,6 @@ def save_plots(history, plots_dir, model_name, params_fname, batch_size, trainin
     plt.grid()
 
     # create train_acc vs. val_acc
-    #plt.figure(figsize=(8, 6))
     plt.subplot(1, 2, 2)
     plt.plot(train_acc, label='Train Accuracy', color='blue')
     plt.plot(val_acc, label='Validation Accuracy', color='red')
