@@ -3,8 +3,9 @@ import argparse
 import utils
 import torch
 import json
-from models import CBISDDSMPatchClassifierVGG, CBISDDSMPatchClassifierResNet
 from train_model import TransferLearningPipiline
+from custom_dataloaders import get_dataloaders
+from models import CBISDDSMPatchClassifierVGG, CBISDDSMPatchClassifierResNet
 
 def main():
 
@@ -26,6 +27,9 @@ def main():
 
             custom_model = None
 
+            # get dataloaders
+            dl_train, dl_val, dl_test = get_dataloaders(parameters['data_folder'], parameters['batch_size'],
+                                                        parameters['validation_ratio'])
             # initialize model
             if 'vgg' in folder_name:
                 custom_model = CBISDDSMPatchClassifierVGG(parameters)
@@ -33,14 +37,14 @@ def main():
                 custom_model = CBISDDSMPatchClassifierResNet(parameters)
 
             # initialize transfer learning pipeline
-            tl_pipeline = TransferLearningPipiline(custom_model, parameters)
+            tl_pipeline = TransferLearningPipiline(custom_model, parameters, dl_train, dl_val, dl_test)
 
             # train and test model
             final_history_path, best_model_path = tl_pipeline.train_model()
             test_history = tl_pipeline.test_model()
 
             # load model from checkpoint and save
-            model_ckpt = os.path.join(best_model_path, 'best_model_finetune.ckpt')
+            model_ckpt = os.path.join(best_model_path, 'best_model.ckpt')
 
             if 'vgg' in folder_name:
                 final_model = CBISDDSMPatchClassifierVGG.load_from_checkpoint(model_ckpt, parameters=parameters)

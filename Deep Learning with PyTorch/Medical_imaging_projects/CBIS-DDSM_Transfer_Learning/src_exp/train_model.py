@@ -64,11 +64,11 @@ class TransferLearningPipiline:
             print(f"Error creating directory {self.checkpoint_path}: {e}")
 
         if mode == 'fc':
-            pat = 4
+            pat = 7
         elif mode == 'conv':
-            pat = 2
+            pat = 5
         else:
-            pat = 2
+            pat = 5
 
         early_stopping_callback = EarlyStopping(
             monitor='val_loss', min_delta=0.01,

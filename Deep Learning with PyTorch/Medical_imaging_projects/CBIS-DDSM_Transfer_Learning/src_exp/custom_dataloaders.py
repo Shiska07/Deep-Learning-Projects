@@ -27,8 +27,8 @@ def get_dataloaders(data_folder, batch_size, val_ratio):
     ddsm_test = datasets.ImageFolder(root=str(data_folder + 'test'), transform=transform)
     print(f'Class_indices testdata {ddsm_test.class_to_idx}')
 
-    dl_train = DataLoader(Subset(ddsm_train, train_idxs), batch_size, shuffle=True, num_workers=2)
-    dl_val = DataLoader(Subset(ddsm_train, val_idxs), batch_size, shuffle=False, num_workers=2)
-    dl_test = DataLoader(ddsm_test, batch_size, num_workers=2)
+    dl_train = DataLoader(Subset(ddsm_train, train_idxs), batch_size, shuffle=True, num_workers=8)
+    dl_val = DataLoader(Subset(ddsm_train, val_idxs), batch_size, shuffle=False, num_workers=8)
+    dl_test = DataLoader(ddsm_test, batch_size, num_workers=8)
 
     return dl_train, dl_val, dl_test
