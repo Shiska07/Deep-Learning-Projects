@@ -26,9 +26,9 @@ def create_annotations_csv(root_folder, label_map, csv_path):
         print(f'Successfully created annotations.csv file at {csv_path}.\n')
 
 
-def move_images_to_single_directory(source_path, destination_path):
+def move_images_to_single_directory(source_path, destination_path, folder_name):
 
-    dest_folder = os.path.join(destination_path, 'allimages')
+    dest_folder = os.path.join(destination_path, folder_name)
 
     if not os.path.exists(dest_folder):
         os.makedirs(dest_folder)
@@ -52,22 +52,27 @@ def move_images_to_single_directory(source_path, destination_path):
     print(f'Successfully moved all images from {source_path} to {dest_folder}.\n')
 
 
-
 # data folder containing images in separate class folders
-data_root = 'data/CBIS-DDSM/processed/aug_cropped/images/test'
+images_path = 'data/CBIS-DDSM/patch_final/images/test'
 
 # destination directory
-save_dir = 'data/CBIS-DDSM/processed/aug_cropped/images/test_attr'
+save_dir = 'data/CBIS-DDSM/patch_attrib_test'
 
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 
 # Dictionary containing class names as keys and label maps as values
-class_label_map = {'BACKGROUND': 0, 'BENIGN_Mass': 1, 'MALIGNANT_Mass': 2}
+class_label_map = {'BACKGROUND': 0, 'BENIGN_Calc': 1, 'BENIGN_Mass': 2, 'MALIGNANT_Calc': 3, 'MALIGNANT_Mass': 4}
 
 # Output CSV file path
 csv_file_path = os.path.join(save_dir, 'annotations.csv')
 
 # Call the function to create the annotations CSV
-create_annotations_csv(data_root, class_label_map, csv_file_path)
-move_images_to_single_directory(data_root, save_dir)
+create_annotations_csv(images_path, class_label_map, csv_file_path)
+
+
+move_images_to_single_directory(images_path, save_dir, 'images')
+
+# move all masks to single folder
+masks_path = 'data/CBIS-DDSM/patch_final/roi/test'
+move_images_to_single_directory(masks_path, save_dir, 'masks')
