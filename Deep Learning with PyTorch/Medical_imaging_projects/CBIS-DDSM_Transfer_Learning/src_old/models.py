@@ -47,6 +47,7 @@ class CBISDDSMPatchClassifierVGG(pl.LightningModule):
 
         self.history = {'train_loss': [], 'train_acc': [],
                     'val_loss': [], 'val_acc': []}
+        self.test_history = {'test_acc': [], 'test_loss': []}
 
         # check for GPU availability
         use_gpu = torch.cuda.is_available()
@@ -64,7 +65,6 @@ class CBISDDSMPatchClassifierVGG(pl.LightningModule):
         else:
             self.model.load_state_dict(torch.load(
                 self.pretrained_model_path, map_location=torch.device('cpu')))
-
 
         custom_layers = get_layers(self.pretrained_model_name, self.num_classes, self.modification_type)
 
@@ -218,6 +218,8 @@ class CBISDDSMPatchClassifierVGG(pl.LightningModule):
         avg_epoch_loss = cum_loss / num_items
         avg_epoch_acc = cum_acc / num_items
         print(f'Test Epoch loss: {avg_epoch_loss} Test epoch Acc: {avg_epoch_acc}')
+        self.test_history['test_loss'].append(avg_epoch_loss)
+        self.test_history['test_acc'].append(avg_epoch_acc)
         self.test_step_outputs.clear()
 
     def setup(self, stage = None):
@@ -258,6 +260,9 @@ class CBISDDSMPatchClassifierVGG(pl.LightningModule):
         self.history['val_loss'].pop(0)
         self.history['val_acc'].pop(0)
         return self.history
+
+    def get_test_history(self):
+        return self.test_history
 
     def clear_history(self):
         for key in self.history:
@@ -311,6 +316,7 @@ class CBISDDSMPatchClassifierResNet(pl.LightningModule):
 
         self.history = {'train_loss': [], 'train_acc': [],
                         'val_loss': [], 'val_acc': []}
+        self.test_history = {'test_acc': [], 'test_loss': []}
 
         # check for GPU availability
         use_gpu = torch.cuda.is_available()
@@ -475,6 +481,8 @@ class CBISDDSMPatchClassifierResNet(pl.LightningModule):
         avg_epoch_loss = cum_loss / num_items
         avg_epoch_acc = cum_acc / num_items
         print(f'Test Epoch loss: {avg_epoch_loss} Test epoch Acc: {avg_epoch_acc}')
+        self.test_history['test_loss'].append(avg_epoch_loss)
+        self.test_history['test_acc'].append(avg_epoch_acc)
         self.test_step_outputs.clear()
 
     def setup(self, stage=None):
@@ -515,6 +523,9 @@ class CBISDDSMPatchClassifierResNet(pl.LightningModule):
         self.history['val_loss'].pop(0)
         self.history['val_acc'].pop(0)
         return self.history
+
+    def get_test_history(self):
+        return self.test_history
 
     def clear_history(self):
         for key in self.history:

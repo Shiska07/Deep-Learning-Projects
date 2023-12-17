@@ -15,10 +15,10 @@ def load_parameters(json_file):
         print(f"Error: JSON file '{json_file}' is not a valid JSON file.")
         return None
 
-def save_history(history, history_dir, model_name, batch_size, training_type, lr, h_params):
+def save_history(history, history_dir, model_name, params_fname, batch_size, training_type, lr, h_params):
 
     history_file_path = os.path.join(history_dir,
-        str(model_name), str(batch_size), str(training_type), str(lr))
+        str(model_name), str(params_fname), str(batch_size), str(training_type), str(lr))
 
     # create directory if non-existent
     try:
@@ -28,37 +28,36 @@ def save_history(history, history_dir, model_name, batch_size, training_type, lr
 
 
     # create and save df
-    file_path = os.path.join(history_file_path, f'history{training_type}.csv')
-    if os.path.isfile(file_path):
-        os.remove(file_path)
+    csv_file_path = os.path.join(history_file_path, f'history{training_type}.csv')
+    if os.path.isfile(csv_file_path):
+        os.remove(csv_file_path)
     df = pd.DataFrame(history)
-    df.to_csv(file_path, index = False)
+    df.to_csv(csv_file_path, index = False)
 
-    hp_file_path = os.path.join(history_dir,
-                             str(model_name), str(batch_size), str(training_type), str(lr), f'hyperparameters{training_type}.json')
+    hp_file_path = os.path.join(history_file_path, f'hyperparameters{training_type}.json')
     with open(hp_file_path, 'w') as json_file:
         json.dump(h_params, json_file)
 
-    return file_path
+    return history_file_path
 
 
-def save_plots(history, plots_dir, model_name, batch_size, training_type, lr):
+def save_plots(history, plots_dir, model_name, params_fname, batch_size, training_type, lr):
     train_loss = history['train_loss']
     val_loss = history['val_loss']
     train_acc = history['train_acc']
     val_acc = history['val_acc']
     
     plots_file_path = os.path.join(plots_dir,
-        str(model_name), str(batch_size),str(training_type), str(lr))
+        str(model_name), str(params_fname), str(batch_size), str(training_type), str(lr))
     # create directory if non-existent
     try:
         os.makedirs(plots_file_path, exist_ok=True)
     except OSError as e:
         print(f"Error creating directory {plots_file_path}: {e}")
 
-    plt.figure(figsize=(16, 12))
-    # create train_loss vs. val_loss
+    plt.figure(figsize=(16, 6))
     plt.subplot(1, 2, 1)
+    # create train_loss vs. val_loss
     plt.plot(train_loss, label='Train Loss', color='blue')
     plt.plot(val_loss, label='Validation Loss', color='red')
     plt.title(f'Training Vs Validation Loss {training_type}')
@@ -66,13 +65,9 @@ def save_plots(history, plots_dir, model_name, batch_size, training_type, lr):
     plt.ylabel('Loss')
     plt.legend()
     plt.grid()
-    name = os.path.join(plots_file_path, 'loss.jpeg')
-    if os.path.isfile(name):
-        os.remove(name)
-    plt.savefig(name)
 
     # create train_acc vs. val_acc
-    plt.figure(figsize=(8, 6))
+    #plt.figure(figsize=(8, 6))
     plt.subplot(1, 2, 2)
     plt.plot(train_acc, label='Train Accuracy', color='blue')
     plt.plot(val_acc, label='Validation Accuracy', color='red')
@@ -81,7 +76,7 @@ def save_plots(history, plots_dir, model_name, batch_size, training_type, lr):
     plt.ylabel('Accuracy')
     plt.legend()
     plt.grid()
-    name = os.path.join(plots_file_path, 'acc.jpeg')
+    name = os.path.join(plots_file_path, 'acc_and_loss.jpeg')
     if os.path.isfile(name):
         os.remove(name)
     plt.savefig(name)
